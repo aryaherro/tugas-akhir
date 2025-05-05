@@ -4,6 +4,7 @@ import { cva } from "class-variance-authority"
 import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Flex, Group, Box } from "@chakra-ui/react"
 
 function NavigationMenu({
   className,
@@ -14,15 +15,16 @@ function NavigationMenu({
   viewport?: boolean
 }) {
   return (
+    
     <NavigationMenuPrimitive.Root
       data-slot="navigation-menu"
       data-viewport={viewport}
       className={cn(
-        "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center",
+        "group/navigation-menu",
         className
       )}
       {...props}
-    >
+      >
       {children}
       {viewport && <NavigationMenuViewport />}
     </NavigationMenuPrimitive.Root>
@@ -34,14 +36,17 @@ function NavigationMenuList({
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.List>) {
   return (
+    // <Group as={Flex} flex="auto" alignItems="center" justifyContent="center" gap="1">
+
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
       className={cn(
-        "group flex flex-1 list-none items-center justify-center gap-1",
+        "",
         className
       )}
       {...props}
-    />
+      />
+      // </Group>
   )
 }
 
@@ -50,11 +55,12 @@ function NavigationMenuItem({
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Item>) {
   return (
+
     <NavigationMenuPrimitive.Item
       data-slot="navigation-menu-item"
-      className={cn("relative", className)}
+      className={cn("", className)}
       {...props}
-    />
+      />
   )
 }
 

@@ -1,109 +1,76 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { ChevronRight, MoreHorizontal } from "lucide-react"
+import { Breadcrumb as BreadcrumbChakra, VisuallyHidden } from '@chakra-ui/react';
+import { ChevronRight, MoreHorizontal } from 'lucide-react';
 
-import { cn } from "@/lib/utils"
+// function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
+//   return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
+// }
 
-function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
-  return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
+function Breadcrumb({ ...props }: BreadcrumbChakra.RootProps) {
+    return <BreadcrumbChakra.Root aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;
 }
 
-function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
-  return (
-    <ol
-      data-slot="breadcrumb-list"
-      className={cn(
-        "text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5",
-        className
-      )}
-      {...props}
-    />
-  )
+function BreadcrumbList({ ...props }: BreadcrumbChakra.ListProps) {
+    return (
+        <BreadcrumbChakra.List
+            data-slot="breadcrumb-list"
+            flex="initial"
+            flexWrap="wrap"
+            alignItems="center"
+            gap={{ base: '1.5', sm: '2.5' }}
+            fontSize="sm"
+            wordBreak="break-word"
+            {...props}
+        />
+    );
 }
 
-function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
-  return (
-    <li
-      data-slot="breadcrumb-item"
-      className={cn("inline-flex items-center gap-1.5", className)}
-      {...props}
-    />
-  )
+
+function BreadcrumbItem({ ...props }: BreadcrumbChakra.ItemProps) {
+    return <BreadcrumbChakra.Item data-slot="breadcrumb-item" display="inline-flex" alignItems="center" gap="1.5" {...props} />;
 }
 
-function BreadcrumbLink({
-  asChild,
-  className,
-  ...props
-}: React.ComponentProps<"a"> & {
-  asChild?: boolean
-}) {
-  const Comp = asChild ? Slot : "a"
-
-  return (
-    <Comp
-      data-slot="breadcrumb-link"
-      className={cn("hover:text-foreground transition-colors", className)}
-      {...props}
-    />
-  )
+function BreadcrumbLink({ ...props }: BreadcrumbChakra.LinkProps) {
+    return <BreadcrumbChakra.Link data-slot="breadcrumb-link" transition="colors" {...props} />;
 }
 
-function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="breadcrumb-page"
-      role="link"
-      aria-disabled="true"
-      aria-current="page"
-      className={cn("text-foreground font-normal", className)}
-      {...props}
-    />
-  )
+function BreadcrumbPage({ ...props }: BreadcrumbChakra.CurrentLinkProps) {
+    return (
+        <BreadcrumbChakra.CurrentLink
+            data-slot="breadcrumb-page"
+            role="link"
+            aria-disabled="true"
+            aria-current="page"
+            fontWeight="normal"
+            {...props}
+        />
+    );
 }
 
-function BreadcrumbSeparator({
-  children,
-  className,
-  ...props
-}: React.ComponentProps<"li">) {
-  return (
-    <li
-      data-slot="breadcrumb-separator"
-      role="presentation"
-      aria-hidden="true"
-      className={cn("[&>svg]:size-3.5", className)}
-      {...props}
-    >
-      {children ?? <ChevronRight />}
-    </li>
-  )
+
+function BreadcrumbSeparator({ children, ...props }: BreadcrumbChakra.SeparatorProps) {
+    return (
+        <BreadcrumbChakra.Separator data-slot="breadcrumb-separator" role="presentation" aria-hidden="true" {...props}>
+            {children ?? <ChevronRight />}
+        </BreadcrumbChakra.Separator>
+    );
 }
 
-function BreadcrumbEllipsis({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="breadcrumb-ellipsis"
-      role="presentation"
-      aria-hidden="true"
-      className={cn("flex size-9 items-center justify-center", className)}
-      {...props}
-    >
-      <MoreHorizontal className="size-4" />
-      <span className="sr-only">More</span>
-    </span>
-  )
+function BreadcrumbEllipsis({ ...props }: BreadcrumbChakra.EllipsisProps) {
+    return (
+        <BreadcrumbChakra.Ellipsis
+            data-slot="breadcrumb-ellipsis"
+            role="presentation"
+            aria-hidden="true"
+            flex="initial"
+            boxSize="9"
+            alignItems="center"
+            justifyContent="center"
+            {...props}
+        >
+            <MoreHorizontal size="4" />
+            <VisuallyHidden>More</VisuallyHidden>
+        </BreadcrumbChakra.Ellipsis>
+    );
 }
 
-export {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  BreadcrumbEllipsis,
-}
+export { Breadcrumb, BreadcrumbEllipsis, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator };

@@ -1,7 +1,7 @@
-import { AppContent } from '@/components/app-content';
-import { AppShell } from '@/components/app-shell';
-import { AppSidebar } from '@/components/app-sidebar';
-import { AppSidebarHeader } from '@/components/app-sidebar-header';
+import { AppContent } from '@/components2/app-content';
+import { AppShell } from '@/components2/app-shell';
+import { AppSidebar } from '@/components2/app-sidebar';
+import { AppSidebarHeader } from '@/components2/app-sidebar-header';
 import { type BreadcrumbItem } from '@/types';
 import { type PropsWithChildren } from 'react';
 

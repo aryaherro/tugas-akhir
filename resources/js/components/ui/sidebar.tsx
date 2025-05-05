@@ -5,7 +5,7 @@ import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -22,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Box, ButtonProps, Flex, FlexProps, VisuallyHidden,Button } from "@chakra-ui/react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -127,7 +128,7 @@ function SidebarProvider({
   return (
     <SidebarContext.Provider value={contextValue}>
       <TooltipProvider delayDuration={0}>
-        <div
+          <Flex
           data-slot="sidebar-wrapper"
           style={
             {
@@ -135,15 +136,11 @@ function SidebarProvider({
               "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
               ...style,
             } as React.CSSProperties
-          }
-          className={cn(
-            "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
-            className
-          )}
-          {...props}
-        >
-          {children}
-        </div>
+          } 
+          minH="svh" w="full"
+          {...props}>
+            {children}
+          </Flex>
       </TooltipProvider>
     </SidebarContext.Provider>
   )
@@ -156,7 +153,7 @@ function Sidebar({
   className,
   children,
   ...props
-}: React.ComponentProps<"div"> & {
+}: FlexProps & {
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
@@ -165,8 +162,11 @@ function Sidebar({
 
   if (collapsible === "none") {
     return (
-      <div
+      <Flex
         data-slot="sidebar"
+        h="full"
+        flexDir="column"
+
         className={cn(
           "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
           className
@@ -174,7 +174,7 @@ function Sidebar({
         {...props}
       >
         {children}
-      </div>
+      </Flex>
     )
   }
 
@@ -249,19 +249,19 @@ function Sidebar({
 }
 
 function SidebarTrigger({
-  className,
   onClick,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: ButtonProps) {
   const { toggleSidebar } = useSidebar()
 
   return (
     <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon"
-      className={cn("h-7 w-7", className)}
+      // variant="ghost"
+      // size="icon"
+      h="7"
+      w="7"
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
@@ -269,7 +269,7 @@ function SidebarTrigger({
       {...props}
     >
       <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
+      <VisuallyHidden >Toggle Sidebar</VisuallyHidden >
     </Button>
   )
 }

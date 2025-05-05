@@ -1,13 +1,12 @@
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
-import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+// import { Button } from '@/components/ui/button';
+// import { Input } from '@/components/ui/input';
+import { PasswordInput, PasswordStrengthMeter } from '@/components/ui/password-input';
 import AuthLayout from '@/layouts/auth-layout';
+import { Button, Field, Flex, Grid, Input, Link as LinkChakra, ProgressCircle, Text } from '@chakra-ui/react';
+import { Link } from '@inertiajs/react';
 
 type RegisterForm = {
     name: string;
@@ -34,10 +33,10 @@ export default function Register() {
     return (
         <AuthLayout title="Create an account" description="Enter your details below to create your account">
             <Head title="Register" />
-            <form className="flex flex-col gap-6" onSubmit={submit}>
-                <div className="grid gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
+            <Flex as="form" flexDirection="column" gap="6" onSubmit={submit}>
+                <Grid gap="6">
+                    <Field.Root as={Grid} gap="2">
+                        <Field.Label htmlFor="name">Name</Field.Label>
                         <Input
                             id="name"
                             type="text"
@@ -50,11 +49,13 @@ export default function Register() {
                             disabled={processing}
                             placeholder="Full name"
                         />
-                        <InputError message={errors.name} className="mt-2" />
-                    </div>
+                        <Field.RequiredIndicator />
+                        {/* <Field.HelperText /> */}
+                        <Field.ErrorText mt="2">{errors.name}</Field.ErrorText>
+                    </Field.Root>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                    <Field.Root as={Grid} gap="2">
+                        <Field.Label htmlFor="email">Email address</Field.Label>
                         <Input
                             id="email"
                             type="email"
@@ -66,12 +67,14 @@ export default function Register() {
                             disabled={processing}
                             placeholder="email@example.com"
                         />
-                        <InputError message={errors.email} />
-                    </div>
+                        <Field.RequiredIndicator />
+                        {/* <Field.HelperText /> */}
+                        <Field.ErrorText>{errors.email}</Field.ErrorText>
+                    </Field.Root>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
+                    <Field.Root as={Grid} gap="2">
+                        <Field.Label htmlFor="password">Password</Field.Label>
+                        <PasswordInput
                             id="password"
                             type="password"
                             required
@@ -82,12 +85,15 @@ export default function Register() {
                             disabled={processing}
                             placeholder="Password"
                         />
-                        <InputError message={errors.password} />
-                    </div>
+                        <PasswordStrengthMeter value={data.password.length / 4} />
+                        <Field.RequiredIndicator />
+                        {/* <Field.HelperText /> */}
+                        <Field.ErrorText>{errors.password}</Field.ErrorText>
+                    </Field.Root>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="password_confirmation">Confirm password</Label>
-                        <Input
+                    <Field.Root as={Grid} gap="2">
+                        <Field.Label htmlFor="password_confirmation">Confirm password</Field.Label>
+                        <PasswordInput
                             id="password_confirmation"
                             type="password"
                             required
@@ -98,22 +104,57 @@ export default function Register() {
                             disabled={processing}
                             placeholder="Confirm password"
                         />
-                        <InputError message={errors.password_confirmation} />
-                    </div>
+                        <Field.RequiredIndicator />
+                        {/* <Field.HelperText /> */}
+                        <Field.ErrorText>{errors.password_confirmation}</Field.ErrorText>
+                    </Field.Root>
 
-                    <Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
-                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Create account
-                    </Button>
-                </div>
+                    <Grid gap="6">
+                        <Button
+                            type="submit"
+                            mt="2"
+                            w="full"
+                            tabIndex={5}
+                            data-slot="button"
+                            display="inline-flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            gap="2"
+                            whiteSpace="nowrap"
+                            rounded="md"
+                            fontSize="sm"
+                            fontWeight="medium"
+                            disabled={processing}
+                        >
+                            {processing && (
+                                <ProgressCircle.Root value={null} size="sm">
+                                    <ProgressCircle.Circle>
+                                        <ProgressCircle.Track />
+                                        <ProgressCircle.Range />
+                                    </ProgressCircle.Circle>
+                                </ProgressCircle.Root>
+                            )}
+                            Create account
+                        </Button>
+                    </Grid>
 
-                <div className="text-muted-foreground text-center text-sm">
-                    Already have an account?{' '}
-                    <TextLink href={route('login')} tabIndex={6}>
-                        Log in
-                    </TextLink>
-                </div>
-            </form>
+                    <Text textAlign="center" fontSize="sm">
+                        Already have an account?{' '}
+                        <LinkChakra
+                            as={Link}
+                            href={route('login')}
+                            tabIndex={6}
+                            textUnderlineOffset="4"
+                            transition="colors"
+                            transitionDuration="300"
+                            transitionTimingFunction="ease-out"
+                            textDecorationColor={{ _hover: 'current' }}
+                        >
+                            Log in
+                        </LinkChakra>
+                    </Text>
+                </Grid>
+            </Flex>
         </AuthLayout>
     );
 }

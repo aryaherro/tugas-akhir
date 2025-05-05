@@ -1,10 +1,10 @@
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
 
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import InputError from '@/components2/input-error';
+import { Button } from '@/components2/ui/button';
+import { Input } from '@/components2/ui/input';
+import { Label } from '@/components2/ui/label';
 
 import HeadingSmall from '@/components/heading-small';
 

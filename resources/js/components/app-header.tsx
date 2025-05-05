@@ -1,39 +1,52 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { Icon } from '@/components/icon';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { UserMenuContent } from '@/components/user-menu-content';
+import { Icon } from '@/components2/icon';
 import { useInitials } from '@/hooks/use-initials';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
+import {
+    Avatar as AvatarChakra,
+    AvatarGroup,
+    Box,
+    Button as ButtonChakra,
+    CloseButton,
+    Drawer,
+    Flex,
+    Grid,
+    Icon as IconChakra,
+    Link as LinkChakra,
+    Menu as MenuChakra,
+    Portal,
+    Text,
+    VisuallyHidden,
+} from '@chakra-ui/react';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { LayoutGrid, LogOut, Menu, Settings } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
+import { ColorModeButton } from './ui/color-mode';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: route('dashboard'),
         icon: LayoutGrid,
     },
 ];
 
 const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
-    },
+    // {
+    //     title: 'Repository',
+    //     href: 'https://github.com/laravel/react-starter-kit',
+    //     icon: Folder,
+    // },
+    // {
+    //     title: 'Documentation',
+    //     href: 'https://laravel.com/docs/starter-kits',
+    //     icon: BookOpen,
+    // },
 ];
 
 const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
@@ -46,90 +59,169 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const getInitials = useInitials();
+    const cleanup = useMobileNavigation();
     return (
         <>
-            <div className="border-sidebar-border/80 border-b">
-                <div className="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
+            <Box
+                borderBottomWidth="1"
+                // className="border-sidebar-border/80 border-b"
+            >
+                <Flex mx="auto" h="16" alignItems="center" px="4" maxW={{ md: '7xl' }}>
                     {/* Mobile Menu */}
-                    <div className="lg:hidden">
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="mr-2 h-[34px] w-[34px]">
-                                    <Menu className="h-5 w-5" />
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent side="left" className="bg-sidebar flex h-full w-64 flex-col items-stretch justify-between">
-                                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                                <SheetHeader className="flex justify-start text-left">
-                                    <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
-                                </SheetHeader>
-                                <div className="flex h-full flex-1 flex-col space-y-4 p-4">
-                                    <div className="flex h-full flex-col justify-between text-sm">
-                                        <div className="flex flex-col space-y-4">
-                                            {mainNavItems.map((item) => (
-                                                <Link key={item.title} href={item.href} className="flex items-center space-x-2 font-medium">
-                                                    {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
-                                                    <span>{item.title}</span>
-                                                </Link>
-                                            ))}
-                                        </div>
+                    <Box hideFrom="lg">
+                        <Drawer.Root placement="start">
+                            <Drawer.Trigger asChild>
+                                <ButtonChakra
+                                    size="sm"
+                                    mr="2"
+                                    h="34px"
+                                    w="34px"
+                                    data-slot="button"
+                                    display="inline-flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    gap="2"
+                                    whiteSpace="nowrap"
+                                    rounded="md"
+                                    fontSize="sm"
+                                    fontWeight="medium"
+                                >
+                                    <IconChakra h="5" w="5">
+                                        <Menu />
+                                    </IconChakra>
+                                </ButtonChakra>
+                            </Drawer.Trigger>
+                            <Portal>
+                                <Drawer.Backdrop />
+                                <Drawer.Positioner>
+                                    <Drawer.Content
+                                        display="flex"
+                                        h="full"
+                                        w="64"
+                                        flexDir="column"
+                                        alignItems="stretch"
+                                        justifyContent="space-between"
+                                    >
+                                        <VisuallyHidden>Navigation Menu</VisuallyHidden>
+                                        <Drawer.Header>
+                                            <Drawer.Title display="flex" justifyContent="start" textAlign="left">
+                                                <IconChakra h="6" w="6" color={{ base: 'black', _dark: 'white' }}>
+                                                    <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
+                                                </IconChakra>
+                                            </Drawer.Title>
+                                        </Drawer.Header>
+                                        <Drawer.Body display="flex" flex="auto" flexDir="column" spaceY="4" p="4">
+                                            <Flex h="full" flexDir="column" justifyContent="space-between" fontSize="sm">
+                                                <Flex flexDir="column" spaceY="4">
+                                                    {mainNavItems.map((item) => (
+                                                        <LinkChakra
+                                                            as={Link}
+                                                            display="flex"
+                                                            key={item.title}
+                                                            href={item.href}
+                                                            alignItems="center"
+                                                            spaceX="2"
+                                                            fontWeight="medium"
+                                                        >
+                                                            {item.icon && (
+                                                                <IconChakra h="5" w="5">
+                                                                    <Icon iconNode={item.icon} />
+                                                                </IconChakra>
+                                                            )}
+                                                            <span>{item.title}</span>
+                                                        </LinkChakra>
+                                                    ))}
+                                                </Flex>
 
-                                        <div className="flex flex-col space-y-4">
-                                            {rightNavItems.map((item) => (
-                                                <a
-                                                    key={item.title}
-                                                    href={item.href}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center space-x-2 font-medium"
-                                                >
-                                                    {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
-                                                    <span>{item.title}</span>
-                                                </a>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
-                    </div>
-
-                    <Link href="/dashboard" prefetch className="flex items-center space-x-2">
+                                                <Flex flexDir="column" spaceY="4">
+                                                    {rightNavItems.map((item) => (
+                                                        <LinkChakra
+                                                            as="a"
+                                                            key={item.title}
+                                                            href={item.href}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            display="flex"
+                                                            alignItems="center"
+                                                            spaceX="2"
+                                                            fontWeight="medium"
+                                                        >
+                                                            {item.icon && (
+                                                                <IconChakra h="5" w="5">
+                                                                    <Icon iconNode={item.icon} />
+                                                                </IconChakra>
+                                                            )}
+                                                            <span>{item.title}</span>
+                                                        </LinkChakra>
+                                                    ))}
+                                                </Flex>
+                                            </Flex>
+                                        </Drawer.Body>
+                                        {/* <Drawer.Footer>
+                                            <Button variant="outline">Cancel</Button>
+                                            <Button>Save</Button>
+                                        </Drawer.Footer> */}
+                                        <Drawer.CloseTrigger asChild>
+                                            <CloseButton size="sm" />
+                                        </Drawer.CloseTrigger>
+                                    </Drawer.Content>
+                                </Drawer.Positioner>
+                            </Portal>
+                        </Drawer.Root>
+                    </Box>
+                    <LinkChakra as={Link} display="flex" alignItems="center" spaceX="2" href={route('dashboard')}>
                         <AppLogo />
-                    </Link>
+                    </LinkChakra>
 
                     {/* Desktop Navigation */}
-                    <div className="ml-6 hidden h-full items-center space-x-6 lg:flex">
+                    <Box
+                        hideBelow="lg"
+                        // display={{ base: 'hidden', lg: 'flex' }}
+                        // _hidden={{ base: true, lg: false }}
+                        h="full"
+                        ml="6"
+                        alignItems="center"
+                        spaceX="6"
+                        display={{ lg: 'Flex' }}
+                    >
                         <NavigationMenu className="flex h-full items-stretch">
                             <NavigationMenuList className="flex h-full items-stretch space-x-2">
                                 {mainNavItems.map((item, index) => (
                                     <NavigationMenuItem key={index} className="relative flex h-full items-center">
-                                        <Link
+                                        <LinkChakra
+                                            as={Link}
                                             href={item.href}
+                                            h={page.url === item.href && activeItemStyles ? '9' : ''}
+                                            cursor={page.url === item.href && activeItemStyles ? 'pointer' : ''}
+                                            px={page.url === item.href && activeItemStyles ? '3' : ''}
                                             className={cn(
                                                 navigationMenuTriggerStyle(),
-                                                page.url === item.href && activeItemStyles,
-                                                'h-9 cursor-pointer px-3',
+                                                // page.url === item.href && activeItemStyles,
+                                                // 'h-9 cursor-pointer px-3',
                                             )}
                                         >
-                                            {item.icon && <Icon iconNode={item.icon} className="mr-2 h-4 w-4" />}
+                                            {item.icon && (
+                                                <IconChakra mr="2" h="4" w="4">
+                                                    <Icon iconNode={item.icon} />
+                                                </IconChakra>
+                                            )}
                                             {item.title}
-                                        </Link>
-                                        {page.url === item.href && (
+                                        </LinkChakra>
+                                        {/* {page.url === item.href && (
                                             <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
-                                        )}
+                                        )} */}
                                     </NavigationMenuItem>
                                 ))}
                             </NavigationMenuList>
                         </NavigationMenu>
-                    </div>
-
-                    <div className="ml-auto flex items-center space-x-2">
-                        <div className="relative flex items-center space-x-1">
-                            <Button variant="ghost" size="icon" className="group h-9 w-9 cursor-pointer">
+                    </Box>
+                    <Flex ml="auto" alignItems="center" spaceX="2">
+                        <Flex position="relative" alignItems="center" spaceX="1">
+                            {/* <Button variant="ghost" size="sm" className="group h-9 w-9 cursor-pointer">
                                 <Search className="!size-5 opacity-80 group-hover:opacity-100" />
-                            </Button>
-                            <div className="hidden lg:flex">
+                            </Button> */}
+
+                            {/* <Flex hideBelow="lg">
                                 {rightNavItems.map((item) => (
                                     <TooltipProvider key={item.title} delayDuration={0}>
                                         <Tooltip>
@@ -150,32 +242,116 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                         </Tooltip>
                                     </TooltipProvider>
                                 ))}
-                            </div>
-                        </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="size-10 rounded-full p-1">
-                                    <Avatar className="size-8 overflow-hidden rounded-full">
-                                        <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
-                                        <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(auth.user.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
+                            </Flex> */}
+                        </Flex>
+                        <MenuChakra.Root>
+                            <MenuChakra.Trigger asChild>
+                                <Button
+                                    boxSize="10"
+                                    rounded="full"
+                                    p="1"
+                                    _hover={{ bg: 'acc' }}
+                                    // variant="ghost" className="size-10 rounded-full p-1"
+                                    // hover:bg-accent hover:text-accent-foreground
+                                >
+                                    <AvatarGroup>
+                                        <AvatarChakra.Root boxSize="8" overflow="hidden" rounded="full">
+                                            <AvatarChakra.Fallback rounded="lg" textDecorationColor={{ base: 'black', _dark: 'white' }}>
+                                                {getInitials(auth.user.name)}
+                                            </AvatarChakra.Fallback>
+                                            <AvatarChakra.Image src={auth.user.avatar} alt={auth.user.name} />
+                                        </AvatarChakra.Root>
+                                    </AvatarGroup>
                                 </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="end">
-                                <UserMenuContent user={auth.user} />
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                </div>
-            </div>
+                            </MenuChakra.Trigger>
+                            <Portal>
+                                <MenuChakra.Positioner>
+                                    <MenuChakra.Content w="56" alignItems="end">
+                                        {/* <MenuChakra.ItemGroup p="0" lineHeight="normal"> */}
+                                        <MenuChakra.Item alignItems="center" gap="2" px="1" py="1.5" textAlign="left" fontSize="sm" value="Profile">
+                                            {/* <UserInfo user={user} showEmail={true} /> */}
+                                            <AvatarGroup>
+                                                <AvatarChakra.Root h="8" w="8" overflow="hidden" rounded="full">
+                                                    <AvatarChakra.Fallback rounded="lg" textDecorationColor={{ base: 'black', _dark: 'white' }}>
+                                                        {getInitials(auth.user.name)}
+                                                    </AvatarChakra.Fallback>
+                                                    <AvatarChakra.Image src={auth.user.avatar} alt={auth.user.name} />
+                                                </AvatarChakra.Root>
+                                            </AvatarGroup>
+                                            <Grid flex="auto" textAlign="left" fontSize="sm" lineHeight="tight">
+                                                <Text truncate lineHeight="medium">
+                                                    {auth.user.name}
+                                                </Text>
+
+                                                <Text
+                                                    truncate
+                                                    fontSize="xs"
+                                                    // className="text-muted-foreground truncate text-xs"
+                                                >
+                                                    {auth.user.email}
+                                                </Text>
+                                            </Grid>
+                                        </MenuChakra.Item>
+                                        {/* </MenuChakra.ItemGroup> */}
+                                        <MenuChakra.Separator />
+                                        <MenuChakra.Item asChild value="Settings" width="full" border="none">
+                                            {/* <LinkChakra display="block" w="full" href={route('profile.edit')} onClick={cleanup}> */}
+                                            <LinkChakra
+                                                as={Link}
+                                                display="block"
+                                                w="full"
+                                                dir="column"
+                                                border="none"
+                                                href={route('profile.edit')}
+                                                // as="button"
+                                                // prefetch
+                                                onClick={cleanup}
+                                            >
+                                                <Flex width="full" dir="column">
+                                                    <IconChakra mr="2">
+                                                        <Settings />
+                                                    </IconChakra>
+                                                    <Text lineHeight="medium">Settings</Text>
+                                                </Flex>
+                                                {/* </Link> */}
+                                            </LinkChakra>
+                                        </MenuChakra.Item>
+                                        <MenuChakra.Item asChild value="Logout">
+                                            <Link as="button" method="post" href={route('logout')} onClick={cleanup} width="full">
+                                                <Flex display="block" width="full" dir="column">
+                                                    <IconChakra mr="2">
+                                                        <LogOut />
+                                                    </IconChakra>
+                                                    Log out
+                                                </Flex>
+                                            </Link>
+                                        </MenuChakra.Item>
+                                    </MenuChakra.Content>
+                                </MenuChakra.Positioner>
+                            </Portal>
+                        </MenuChakra.Root>
+                    </Flex>
+                    <ColorModeButton />
+                </Flex>
+            </Box>
             {breadcrumbs.length > 1 && (
-                <div className="border-sidebar-border/70 flex w-full border-b">
-                    <div className="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
+                <Flex
+                    border="initial"
+                    w="full"
+                    // className="border-sidebar-border/70 flex w-full border-b"
+                >
+                    <Flex
+                        mx="auto"
+                        h="12"
+                        alignItems="center"
+                        justifyContent="start"
+                        px="4"
+                        md={{ maxW: '7xl' }}
+                        // className="text-neutral-500"
+                    >
                         <Breadcrumbs breadcrumbs={breadcrumbs} />
-                    </div>
-                </div>
+                    </Flex>
+                </Flex>
             )}
         </>
     );

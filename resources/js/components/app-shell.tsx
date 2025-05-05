@@ -1,5 +1,6 @@
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SharedData } from '@/types';
+import { Flex } from '@chakra-ui/react';
 import { usePage } from '@inertiajs/react';
 
 interface AppShellProps {
@@ -11,7 +12,11 @@ export function AppShell({ children, variant = 'header' }: AppShellProps) {
     const isOpen = usePage<SharedData>().props.sidebarOpen;
 
     if (variant === 'header') {
-        return <div className="flex min-h-screen w-full flex-col">{children}</div>;
+        return (
+            <Flex minH="100vh" w="full" flexDir="column">
+                {children}
+            </Flex>
+        );
     }
 
     return <SidebarProvider defaultOpen={isOpen}>{children}</SidebarProvider>;

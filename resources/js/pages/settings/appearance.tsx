@@ -6,6 +6,7 @@ import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { Box } from '@chakra-ui/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,10 +21,10 @@ export default function Appearance() {
             <Head title="Appearance settings" />
 
             <SettingsLayout>
-                <div className="space-y-6">
+                <Box spaceY="6" className="space-y-6">
                     <HeadingSmall title="Appearance settings" description="Update your account's appearance settings" />
                     <AppearanceTabs />
-                </div>
+                </Box>
             </SettingsLayout>
         </AppLayout>
     );

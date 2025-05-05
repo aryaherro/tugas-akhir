@@ -1,5 +1,5 @@
-import { Icon } from '@/components/icon';
-import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Icon } from '@/components2/icon';
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components2/ui/sidebar';
 import { type NavItem } from '@/types';
 import { type ComponentPropsWithoutRef } from 'react';
 

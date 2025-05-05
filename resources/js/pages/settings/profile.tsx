@@ -5,12 +5,12 @@ import { FormEventHandler } from 'react';
 
 import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+// import { Button } from '@/components2/ui/button';
+// import { Input } from '@/components2/ui/input';
+// import { Label } from '@/components2/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { Box, Button, Field, Flex, Grid, Input, Text } from '@chakra-ui/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,7 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 type ProfileForm = {
     name: string;
     email: string;
-}
+};
 
 export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
     const { auth } = usePage<SharedData>().props;
@@ -45,67 +45,74 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
             <Head title="Profile settings" />
 
             <SettingsLayout>
-                <div className="space-y-6">
+                <Box spaceY="6">
                     <HeadingSmall title="Profile information" description="Update your name and email address" />
-
-                    <form onSubmit={submit} className="space-y-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="name">Name</Label>
-
+                    <Box as="form" spaceY="6" onSubmit={submit}>
+                        <Field.Root as={Grid} gap="2">
+                            <Field.Label htmlFor="name">Name</Field.Label>
                             <Input
                                 id="name"
-                                className="mt-1 block w-full"
-                                value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
+                                type="text"
                                 required
                                 autoComplete="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
                                 placeholder="Full name"
+                                mt="1"
+                                display="block"
+                                w="full"
                             />
+                            <Field.RequiredIndicator />
+                            {/* <Field.HelperText /> */}
+                            <Field.ErrorText mt="2">{errors.name}</Field.ErrorText>
+                        </Field.Root>
 
-                            <InputError className="mt-2" message={errors.name} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email address</Label>
-
+                        <Field.Root as={Grid} gap="2">
+                            <Field.Label htmlFor="email">Email address</Field.Label>
                             <Input
                                 id="email"
                                 type="email"
-                                className="mt-1 block w-full"
+                                required
+                                autoComplete="email"
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
-                                required
-                                autoComplete="username"
                                 placeholder="Email address"
+                                mt="1"
+                                display="block"
+                                w="full"
                             />
-
-                            <InputError className="mt-2" message={errors.email} />
-                        </div>
-
+                            <Field.RequiredIndicator />
+                            {/* <Field.HelperText /> */}
+                            <Field.ErrorText mt="2">{errors.email}</Field.ErrorText>
+                        </Field.Root>
                         {mustVerifyEmail && auth.user.email_verified_at === null && (
                             <div>
                                 <p className="text-muted-foreground -mt-4 text-sm">
                                     Your email address is unverified.{' '}
-                                    <Link
-                                        href={route('verification.send')}
-                                        method="post"
-                                        as="button"
-                                        className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                    >
-                                        Click here to resend the verification email.
-                                    </Link>
+                                    <Text textUnderlinePosition="under">
+                                        <Link
+                                            href={route('verification.send')}
+                                            method="post"
+                                            as="button"
+                                            className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                        >
+                                            Click here to resend the verification email.
+                                        </Link>
+                                    </Text>
                                 </p>
 
                                 {status === 'verification-link-sent' && (
-                                    <div className="mt-2 text-sm font-medium text-green-600">
+                                    <Text mt="2" fontSize="sm" fontWeight="medium" color="green.600">
                                         A new verification link has been sent to your email address.
-                                    </div>
+                                    </Text>
                                 )}
                             </div>
                         )}
 
-                        <div className="flex items-center gap-4">
-                            <Button disabled={processing}>Save</Button>
+                        <Flex alignItems="center" gap="4">
+                            <Button type="submit" disabled={processing}>
+                                Save
+                            </Button>
 
                             <Transition
                                 show={recentlySuccessful}
@@ -114,11 +121,13 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                 leave="transition ease-in-out"
                                 leaveTo="opacity-0"
                             >
-                                <p className="text-sm text-neutral-600">Saved</p>
+                                <Text fontSize="sm" color="neutral.600">
+                                    Saved
+                                </Text>
                             </Transition>
-                        </div>
-                    </form>
-                </div>
+                        </Flex>
+                    </Box>
+                </Box>
 
                 <DeleteUser />
             </SettingsLayout>

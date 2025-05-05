@@ -1,8 +1,16 @@
+import { Box, Heading, Text } from '@chakra-ui/react';
+
 export default function HeadingSmall({ title, description }: { title: string; description?: string }) {
     return (
-        <header>
-            <h3 className="mb-0.5 text-base font-medium">{title}</h3>
-            {description && <p className="text-muted-foreground text-sm">{description}</p>}
-        </header>
+        <Box as="header">
+            <Heading as="h3" mb="0.5" fontSize="1rem" fontWeight="medium">
+                {title}
+            </Heading>
+            {description && (
+                <Text fontSize="sm" color={'bg.muted'}>
+                    {description}
+                </Text>
+            )}
+        </Box>
     );
 }

@@ -1,6 +1,5 @@
-import { AppHeader } from '@/components/app-header';
+import AppLayoutTemplate from '@/layouts/app/app-header-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Box } from '@chakra-ui/react';
 import { type ReactNode } from 'react';
 
 interface AppLayoutProps {
@@ -9,10 +8,7 @@ interface AppLayoutProps {
 }
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
-    // <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-    <Box>
-        <AppHeader breadcrumbs={breadcrumbs} />
+    <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
         {children}
-    </Box>
-    // </AppLayoutTemplate>
+    </AppLayoutTemplate>
 );

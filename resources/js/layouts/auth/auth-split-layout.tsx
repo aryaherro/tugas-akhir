@@ -1,5 +1,6 @@
 import AppLogoIcon from '@/components/app-logo-icon';
 import { type SharedData } from '@/types';
+import { Grid } from '@chakra-ui/react';
 import { Link, usePage } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
@@ -12,7 +13,16 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
     const { name, quote } = usePage<SharedData>().props;
 
     return (
-        <div className="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
+        <Grid
+            position="relative"
+            h="dvh"
+            gridTemplateColumns={{ lg: '2' }}
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            px={{ base: '8', lg: '0' }}
+            maxW={{ lg: 'none' }}
+        >
             <div className="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r">
                 <div className="absolute inset-0 bg-zinc-900" />
                 <Link href={route('home')} className="relative z-20 flex items-center text-lg font-medium">
@@ -40,6 +50,6 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
                     {children}
                 </div>
             </div>
-        </div>
+        </Grid>
     );
 }
