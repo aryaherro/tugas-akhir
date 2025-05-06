@@ -31,7 +31,7 @@ import { ColorModeButton } from './ui/color-mode';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: route('dashboard'),
+        href: 'dashboard',
         icon: LayoutGrid,
     },
 ];
@@ -125,6 +125,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                             alignItems="center"
                                                             spaceX="2"
                                                             fontWeight="medium"
+                                                            bgColor={route(item.href).includes(page.url) ? { base: 'cyan.400', _dark: 'gray' } : ''}
                                                         >
                                                             {item.icon && (
                                                                 <IconChakra h="5" w="5">
@@ -193,10 +194,12 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <NavigationMenuItem key={index} className="relative flex h-full items-center">
                                         <LinkChakra
                                             as={Link}
-                                            href={item.href}
-                                            h={page.url === item.href && activeItemStyles ? '9' : ''}
-                                            cursor={page.url === item.href && activeItemStyles ? 'pointer' : ''}
-                                            px={page.url === item.href && activeItemStyles ? '3' : ''}
+                                            href={route(item.href)}
+                                            h={route(item.href).includes(page.url) ? '9' : ''}
+                                            cursor={route(item.href).includes(page.url) ? 'pointer' : ''}
+                                            px={route(item.href).includes(page.url) ? '3' : ''}
+                                            bgColor={route(item.href).includes(page.url) ? { base: 'cyan.400', _dark: 'gray' } : ''}
+                                            // "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[active=true]:bg-accent/50 data-[state=open]:bg-accent/50 data-[active=true]:text-accent-foreground ring-ring/10 dark:ring-ring/20 dark:outline-ring/40 outline-ring/50 transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-1"
                                             className={cn(
                                                 navigationMenuTriggerStyle(),
                                                 // page.url === item.href && activeItemStyles,
