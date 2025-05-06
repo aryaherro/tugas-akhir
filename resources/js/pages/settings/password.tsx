@@ -67,7 +67,7 @@ export default function Password() {
                                 mt="1"
                                 display="block"
                                 w="full"
-                                autoComplete="current_password"
+                                autoComplete="current-password"
                                 placeholder="Current password"
                             />
                             <Field.RequiredIndicator />

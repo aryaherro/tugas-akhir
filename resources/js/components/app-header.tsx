@@ -104,10 +104,13 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     >
                                         <VisuallyHidden>Navigation Menu</VisuallyHidden>
                                         <Drawer.Header>
-                                            <Drawer.Title display="flex" justifyContent="start" textAlign="left">
+                                            <Drawer.Title display="flex" flexDir="column" justifyContent="center" textAlign="center">
                                                 <IconChakra h="6" w="6" color={{ base: 'black', _dark: 'white' }}>
-                                                    <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
+                                                    <AppLogoIcon
+                                                    // className="h-6 w-6 fill-current text-black dark:text-white"
+                                                    />
                                                 </IconChakra>
+                                                Layanan Transportasi
                                             </Drawer.Title>
                                         </Drawer.Header>
                                         <Drawer.Body display="flex" flex="auto" flexDir="column" spaceY="4" p="4">

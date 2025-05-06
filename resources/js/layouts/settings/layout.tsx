@@ -1,8 +1,7 @@
-import Heading from '@/components/heading';
-import { Button } from '@/components2/ui/button';
+// import Heading from '@/components/heading';
 // import { Separator } from '@/components2/ui/separator';
 import { type NavItem } from '@/types';
-import { Box, Button as ButtonChakra, Container, Flex, Link as LinkChakra, Separator } from '@chakra-ui/react';
+import { Box, Button as ButtonChakra, Container, Flex, Heading, Link as LinkChakra, Separator, Text } from '@chakra-ui/react';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
@@ -34,24 +33,25 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     return (
         <Box px="4" py="6">
-            <Heading title="Settings" description="Manage your profile and account settings" />
+            {/* <Heading title="Settings" description="Manage your profile and account settings" /> */}
+            <Box mb="8" spaceY="0.5">
+                <Heading as="h2" fontSize="xl" fontWeight="semibold" letterSpacing="tight">
+                    Settings
+                </Heading>
+                <Text fontSize="sm">Manage your profile and account settings</Text>
+            </Box>
 
             <Flex flexDir={{ base: 'col', lg: 'row' }} spaceY={{ base: '8', lg: '0' }} spaceX={{ lg: '12' }}>
                 <Box as="aside" w={{ base: 'full', lg: '48' }} maxW="lg">
                     <Flex as="nav" flexDir="column" spaceY="1" spaceX="0">
                         {sidebarNavItems.map((item, index) => (
                             <ButtonChakra
-                                as={Button}
                                 key={`${item.href}-${index}`}
                                 size="sm"
-                                variant="ghost"
                                 asChild
                                 w="full"
                                 justifyContent="start"
-                                bgColor={currentPath === item.href ? 'bg.muted' : ''}
-                                // className={cn('w-full justify-start', {
-                                //     'bg-muted': currentPath === item.href,
-                                // })}
+                                bgColor={currentPath === item.href ? 'Highlight' : 'none'}
                             >
                                 <LinkChakra
                                     as={Link}
