@@ -31,8 +31,23 @@ import { ColorModeButton } from './ui/color-mode';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: 'dashboard',
+        href: route('dashboard'),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Role',
+        href: route('role.index'),
+        role: 'admin',
+    },
+    {
+        title: 'Permission',
+        href: route('permission.index'),
+        role: 'admin',
+    },
+    {
+        title: 'User',
+        href: route('user.index'),
+        role: 'admin',
     },
 ];
 
@@ -125,7 +140,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                             alignItems="center"
                                                             spaceX="2"
                                                             fontWeight="medium"
-                                                            bgColor={route(item.href).includes(page.url) ? { base: 'cyan.400', _dark: 'gray' } : ''}
+                                                            bgColor={item.href.includes(page.url) ? { base: 'cyan.400', _dark: 'gray' } : ''}
                                                         >
                                                             {item.icon && (
                                                                 <IconChakra h="5" w="5">
@@ -194,11 +209,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <NavigationMenuItem key={index} className="relative flex h-full items-center">
                                         <LinkChakra
                                             as={Link}
-                                            href={route(item.href)}
-                                            h={route(item.href).includes(page.url) ? '9' : ''}
-                                            cursor={route(item.href).includes(page.url) ? 'pointer' : ''}
-                                            px={route(item.href).includes(page.url) ? '3' : ''}
-                                            bgColor={route(item.href).includes(page.url) ? { base: 'cyan.400', _dark: 'gray' } : ''}
+                                            href={item.href}
+                                            h={item.href.includes(page.url) ? '9' : ''}
+                                            cursor={item.href.includes(page.url) ? 'pointer' : ''}
+                                            px={item.href.includes(page.url) ? '3' : ''}
+                                            bgColor={item.href.includes(page.url) ? { base: 'cyan.400', _dark: 'gray' } : ''}
                                             // "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[active=true]:bg-accent/50 data-[state=open]:bg-accent/50 data-[active=true]:text-accent-foreground ring-ring/10 dark:ring-ring/20 dark:outline-ring/40 outline-ring/50 transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-1"
                                             className={cn(
                                                 navigationMenuTriggerStyle(),

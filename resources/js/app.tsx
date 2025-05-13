@@ -4,7 +4,7 @@ import { Provider } from '@/components/ui/provider';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
-import { ColorModeProvider } from './components/ui/color-mode';
+import { SidebarProvider } from './components/ui/SidebarContext';
 import { initializeTheme } from './hooks/use-appearance';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -17,9 +17,9 @@ createInertiaApp({
 
         root.render(
             <Provider>
-                <ColorModeProvider>
+                <SidebarProvider>
                     <App {...props} />
-                </ColorModeProvider>
+                </SidebarProvider>
             </Provider>,
         );
     },

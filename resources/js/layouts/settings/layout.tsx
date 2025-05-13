@@ -7,14 +7,14 @@ import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        id: 'profile',
+        label: 'Profile',
         href: '/settings/profile',
-        icon: null,
     },
     {
-        title: 'Password',
+        id: 'password',
+        label: 'Password',
         href: '/settings/password',
-        icon: null,
     },
     // {
     //     title: 'Appearance',
@@ -51,14 +51,16 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 asChild
                                 w="full"
                                 justifyContent="start"
-                                bgColor={currentPath === item.href ? 'Highlight' : 'none'}
+                                bgColor={currentPath === item.href ? 'Highlight' : 'white'}
                             >
                                 <LinkChakra
                                     as={Link}
                                     href={item.href}
                                     // prefetch
                                 >
-                                    {item.title}
+                                    <Text fontSize="sm" fontWeight="medium" color={currentPath === item.href ? 'white' : 'gray.700'}>
+                                        {item.label}
+                                    </Text>
                                 </LinkChakra>
                             </ButtonChakra>
                         ))}

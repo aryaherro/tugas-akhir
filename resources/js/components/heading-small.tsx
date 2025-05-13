@@ -7,7 +7,11 @@ export default function HeadingSmall({ title, description }: { title: string; de
                 {title}
             </Heading>
             {description && (
-                <Text fontSize="sm" color={{ base: 'bg.muted', _dark: 'white' }}>
+                <Text
+                    fontSize="sm"
+                    // color={{ base: 'bg.muted', _dark: 'white' }}
+                    color="gray.500"
+                >
                     {description}
                 </Text>
             )}

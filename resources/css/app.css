@@ -1,8 +1,4 @@
-@import 'tailwindcss';
-
-@plugin 'tailwindcss-animate';
-
-@source '../views';
+/* @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
 @custom-variant dark (&:is(.dark *));
@@ -58,7 +54,7 @@
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 }
-
+*/
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -67,7 +63,7 @@
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
-@layer base {
+/*@layer base {
     *,
     ::after,
     ::before,
@@ -157,3 +153,4 @@
         @apply bg-background text-foreground;
     }
 }
+*/

@@ -1,10 +1,9 @@
 import AppLogoIcon from '@/components/app-logo-icon';
 import { ColorModeButton } from '@/components/ui/color-mode';
 import { useSidebar } from '@/components/ui/SidebarContext';
-import { Tooltip } from '@/components/ui/tooltip';
 import { useInitials } from '@/hooks/use-initials';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { NavItem, type SharedData } from '@/types';
+import { type SharedData } from '@/types';
 import {
     Avatar,
     AvatarGroup,
@@ -26,16 +25,24 @@ import { Link, usePage } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { BsChat, BsChevronDown } from 'react-icons/bs';
-import { FaUser } from 'react-icons/fa';
-import { MdCalendarMonth, MdClose, MdDashboard, MdSettings, MdStar } from 'react-icons/md';
+import { FaBell } from 'react-icons/fa';
+import { MdCalendarMonth, MdClose, MdSettings, MdStar } from 'react-icons/md';
 import { RxHamburgerMenu } from 'react-icons/rx';
+
+interface NavItem {
+    id: string;
+    label: string;
+    href?: string;
+    icon: typeof MdCalendarMonth;
+    subItems?: NavItem[];
+}
 
 const MENU_ITEMS: NavItem[] = [
     {
         id: '1',
         label: 'Dashboard',
         href: route('dashboard'),
-        icon: MdDashboard,
+        icon: MdCalendarMonth,
     },
     {
         id: '2',
@@ -54,13 +61,11 @@ const MENU_ITEMS: NavItem[] = [
     },
     {
         id: '4',
-        label: 'Admin',
+        label: 'Settings',
         icon: MdSettings,
-        role: 'admin',
         subItems: [
-            { id: '4-1', label: 'Permission', icon: MdStar, href: route('permissions.index') },
-            { id: '4-2', label: 'Role', icon: MdStar, href: route('roles.index') },
-            { id: '4-3', label: 'User', icon: FaUser, href: route('users.index') },
+            { id: '3-1', label: 'Account', icon: MdStar },
+            { id: '3-2', label: 'Security', icon: MdStar },
         ],
     },
 ];
@@ -113,84 +118,67 @@ export default ({ children }: { children: React.ReactNode }) => {
                         </Flex>
                         <Separator orientation="horizontal" />
                         {MENU_ITEMS.map((item) => (
-                            <Tooltip
-                                showArrow
-                                content={item.label}
-                                disabled={isOpen}
-                                key={item.id}
-                                positioning={{ placement: 'right-end' }}
-                                contentProps={{ css: { '--tooltip-bg': 'tomato' } }}
-                            >
-                                <Box key={item.id}>
-                                    <LinkChakra
-                                        // {item.subItems?as={Link}:""}
-                                        hidden={!!(item.role && !auth.user.roles.some((role) => role.name === item.role))}
-                                        as={item.subItems ? undefined : Link}
-                                        href={item.href}
-                                        // as={Link}
-                                        display="flex"
-                                        alignItems="center"
-                                        p={2}
-                                        pl={1}
-                                        borderRadius="md"
-                                        gap={2}
-                                        _hover={{
-                                            bg: 'blue.50',
-                                            color: 'blue.600',
-                                        }}
-                                        onClick={() => setOpenMenu(openMenu === item.id ? null : item.id)}
-                                    >
-                                        <Icon as={item.icon} boxSize={5} />
-                                        {isOpen && (
-                                            <>
-                                                <Text flex={1}>{item.label}</Text>
-                                                {item.subItems && (
-                                                    <Icon
-                                                        as={BsChevronDown}
-                                                        boxSize={4}
-                                                        transform={openMenu === item.id ? 'rotate(180deg)' : ''}
-                                                        transition="transform 0.2s"
-                                                    />
-                                                )}
-                                            </>
-                                        )}
-                                    </LinkChakra>
-
-                                    {item.subItems && (
-                                        <Collapsible.Root
-                                            open={openMenu === item.id}
-                                            onOpenChange={() => setOpenMenu(openMenu === item.id ? null : item.id)}
-                                        >
-                                            <Collapsible.Content>
-                                                <Stack gap={1} pl={isOpen ? 5 : 0} mt={1} p={isOpen ? 1 : 0}>
-                                                    {item.subItems.map((subItem) => (
-                                                        <LinkChakra
-                                                            as={Link}
-                                                            href={subItem.href}
-                                                            key={subItem.id}
-                                                            p={2}
-                                                            borderRadius="md"
-                                                            _hover={{
-                                                                bg: 'blue.50',
-                                                                color: 'blue.600',
-                                                            }}
-                                                        >
-                                                            {isOpen ? (
-                                                                <>
-                                                                    <Icon as={subItem.icon} />
-                                                                    <Text>{subItem.label}</Text>
-                                                                </>
-                                                            ) : (
-                                                                <Icon as={subItem.icon} boxSize={3} />
-                                                            )}
-                                                        </LinkChakra>
-                                                    ))}
-                                                </Stack>
-                                            </Collapsible.Content>
-                                        </Collapsible.Root>
+                            <Box key={item.id}>
+                                <LinkChakra
+                                    // {item.subItems?as={Link}:""}
+                                    as={item.subItems ? undefined : Link}
+                                    href={item.href}
+                                    // as={Link}
+                                    display="flex"
+                                    alignItems="center"
+                                    p={2}
+                                    pl={1}
+                                    borderRadius="md"
+                                    gap={2}
+                                    _hover={{
+                                        bg: 'blue.50',
+                                        color: 'blue.600',
+                                    }}
+                                    onClick={() => setOpenMenu(openMenu === item.id ? null : item.id)}
+                                >
+                                    <Icon as={item.icon} boxSize={5} />
+                                    {isOpen && (
+                                        <>
+                                            <Text flex={1}>{item.label}</Text>
+                                            {item.subItems && (
+                                                <Icon
+                                                    as={BsChevronDown}
+                                                    boxSize={4}
+                                                    transform={openMenu === item.id ? 'rotate(180deg)' : ''}
+                                                    transition="transform 0.2s"
+                                                />
+                                            )}
+                                        </>
                                     )}
-                                </Box>
-                            </Tooltip>
+                                </LinkChakra>
+
+                                {item.subItems && (
+                                    <Collapsible.Root
+                                        open={openMenu === item.id}
+                                        onOpenChange={() => setOpenMenu(openMenu === item.id ? null : item.id)}
+                                    >
+                                        <Collapsible.Content>
+                                            <Stack gap={1} pl={isOpen ? 8 : 0} mt={1}>
+                                                {item.subItems.map((subItem) => (
+                                                    <LinkChakra
+                                                        as={Link}
+                                                        href={subItem.href}
+                                                        key={subItem.id}
+                                                        p={2}
+                                                        borderRadius="md"
+                                                        _hover={{
+                                                            bg: 'blue.50',
+                                                            color: 'blue.600',
+                                                        }}
+                                                    >
+                                                        {isOpen ? <Text>{subItem.label}</Text> : <Icon as={subItem.icon} boxSize={5} />}
+                                                    </LinkChakra>
+                                                ))}
+                                            </Stack>
+                                        </Collapsible.Content>
+                                    </Collapsible.Root>
+                                )}
+                            </Box>
                         ))}
                     </Stack>
                 </Stack>
@@ -213,6 +201,9 @@ export default ({ children }: { children: React.ReactNode }) => {
                         )}
 
                         <Flex flex={1} justify="flex-end" gap={4}>
+                            <IconButton aria-label="Notifications" variant="ghost">
+                                <FaBell />
+                            </IconButton>
                             {auth.user ? (
                                 <Menu.Root>
                                     <Menu.Trigger asChild>
