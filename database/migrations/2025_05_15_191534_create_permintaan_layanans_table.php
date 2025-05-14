@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('driver_id')->constrained('users')->onDelete('cascade')->nullable();
             $table->time('jam_berangkat')->nullable();
             $table->time('jam_kembali')->nullable();
-            $table->string('kilometer_terakhir')->nullable();
+            $table->integer('kilometer_terakhir')->nullable();
             $table->timestamps();
         });
     }

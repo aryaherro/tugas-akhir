@@ -23,45 +23,85 @@ import { Select } from 'chakra-react-select';
 import { FormEventHandler, useRef, useState } from 'react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
-type PermissionType = {
+type UnitType = {
     id: number;
     name: string;
 };
 
-type RoleType = {
-    id: number | undefined;
+type UserType = {
+    id: number;
     name: string;
-    guard_name: string;
-    permissions: PermissionType[] | undefined;
+    email: string;
+};
+
+type MobilType = {
+    id: number;
+    nama: string;
+    plat_nomor: string;
+};
+
+type TipePermintaanType = {
+    id: number;
+    name: string;
+};
+
+type StatusPermintaanType = {
+    id: number;
+    name: string;
+};
+
+type PermintaanType = {
+    id: number | null;
+    tanggal: Date;
+    tipe_permintaan: TipePermintaanType;
+    mobil: MobilType;
+    unit: UnitType;
+    creator: UserType | null;
+    tujuan: string;
+    kilometer: number;
+    status_permintaan: StatusPermintaanType;
+    driver: UserType | null;
+    jam_berangkat: string | null;
+    jam_kembali: string | null;
+    kilometer_terakhir: number | null;
 };
 
 export default () =>
     // { children }: { children: React.ReactNode }
     {
-        type RoleResponse = {
+        type PermintaanResponse = {
             currentPage: number;
             perPage: number;
             total: number;
-            data: RoleType[];
+            data: PermintaanType[];
             [key: string]: unknown;
             // Add other properties like meta, links if needed
         };
 
-        const { roles, filters } = usePage<{ roles: RoleResponse; filters: any }>().props;
-        const { permissions } = usePage<{ permissions: PermissionType[] }>().props;
+        const { permintaans, filters } = usePage<{ permintaans: PermintaanResponse; filters: any }>().props;
+        // const { permissions } = usePage<{ permissions: PermissionType[] }>().props;
         const [open, setOpen] = useState(false);
         const [modal, setModal] = useState('');
 
         const {
-            data: role,
-            setData: setRole,
+            data: permintaan,
+            setData: setPermintaan,
             reset,
             processing,
-        } = useForm<RoleType>({
-            id: undefined,
-            name: '',
-            guard_name: 'web',
-            permissions: undefined,
+        } = useForm<PermintaanType>({
+            id: null,
+            tanggal: new Date(),
+            tipe_permintaan: { id: 0, name: '' },
+            mobil: { id: 0, nama: '', plat_nomor: '' },
+            unit: { id: 0, name: '' },
+            creator: { id: 0, name: '', email: '', unit: null },
+            tujuan: '',
+            kilometer: 0,
+            status_permintaan: { id: 0, name: '' },
+            driver: { id: 0, name: '', email: '', unit: null },
+            jam_berangkat: '',
+            jam_kembali: '',
+            kilometer_terakhir: 0,
         });
         const [selectedOption, setSelectedOption] = useState<
             {

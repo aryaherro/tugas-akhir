@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(MobilSeeder::class);
         $this->call(StatusPermintaanSeeder::class);
+        $this->call(TipePermintaanSeeder::class);
     }
 }
