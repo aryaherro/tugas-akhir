@@ -1,12 +1,8 @@
-import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
-
-// import { Checkbox } from '@/components/ui/checkbox';
-// import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import AuthLayout from '@/layouts/auth-layout';
 import { Button as ButtonChakra, Checkbox, Field, Flex, Grid, Input, Link as LinkChakra, ProgressCircle, Text } from '@chakra-ui/react';
-import { Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { FormEventHandler } from 'react';
 
 type LoginForm = {
     email: string;

@@ -1,13 +1,11 @@
 // Components
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
+import { Grid } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import AuthLayout from '@/layouts/auth-layout';
+import { Button, Field, Fieldset, Flex, ProgressCircle } from '@chakra-ui/react';
 
 export default function ConfirmPassword() {
     const { data, setData, post, processing, errors, reset } = useForm<Required<{ password: string }>>({
@@ -29,11 +27,12 @@ export default function ConfirmPassword() {
         >
             <Head title="Confirm password" />
 
-            <form onSubmit={submit}>
-                <div className="space-y-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
+            <Fieldset.Root as={'form'} gap={6} onSubmit={submit}>
+                <Fieldset.Legend />
+                <Fieldset.Content>
+                    <Field.Root as={Grid} gap="2">
+                        <Field.Label htmlFor="password">Password</Field.Label>
+                        <PasswordInput
                             id="password"
                             type="password"
                             name="password"
@@ -43,18 +42,25 @@ export default function ConfirmPassword() {
                             autoFocus
                             onChange={(e) => setData('password', e.target.value)}
                         />
-
-                        <InputError message={errors.password} />
-                    </div>
-
-                    <div className="flex items-center">
-                        <Button className="w-full" disabled={processing}>
-                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                        <Field.RequiredIndicator />
+                        {/* <Field.HelperText /> */}
+                        <Field.ErrorText>{errors.password}</Field.ErrorText>
+                    </Field.Root>
+                    <Flex alignItems="center">
+                        <Button type="submit" w="full" disabled={processing}>
+                            {processing && (
+                                <ProgressCircle.Root value={null} size="sm">
+                                    <ProgressCircle.Circle>
+                                        <ProgressCircle.Track />
+                                        <ProgressCircle.Range />
+                                    </ProgressCircle.Circle>
+                                </ProgressCircle.Root>
+                            )}
                             Confirm password
                         </Button>
-                    </div>
-                </div>
-            </form>
+                    </Flex>
+                </Fieldset.Content>
+            </Fieldset.Root>
         </AuthLayout>
     );
 }

@@ -5,7 +5,6 @@ import {
     Button,
     ButtonGroup,
     Center,
-    createListCollection,
     Dialog,
     Field,
     Flex,
@@ -16,11 +15,11 @@ import {
     List,
     Pagination,
     Portal,
-    Select,
     Stack,
     Table,
 } from '@chakra-ui/react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Select } from 'chakra-react-select';
 import { FormEventHandler, useRef, useState } from 'react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
@@ -58,21 +57,28 @@ export default () =>
             setData: setRole,
             reset,
             processing,
-            errors,
         } = useForm<RoleType>({
             id: undefined,
             name: '',
             guard_name: 'web',
             permissions: undefined,
         });
-        const [selectedOption, setSelectedOption] = useState<number[]>([]);
+        const [selectedOption, setSelectedOption] = useState<
+            {
+                label: string;
+                value: number;
+            }[]
+        >([]);
 
         const handleSelectChange = (e: any) => {
             setRole({
                 ...role,
-                permissions: e.items.map((item: any) => ({ id: Number(item.value), name: item.label }) as PermissionType),
+                permissions: e.map((item: { value: number; label: string }) => ({
+                    id: item.value,
+                    name: item.label,
+                })),
             });
-            setSelectedOption(e.value);
+            setSelectedOption(e);
         };
 
         const submit: FormEventHandler = (e) => {
@@ -148,7 +154,10 @@ export default () =>
                                 lazyMount
                                 open={open}
                                 onOpenChange={(e) => setOpen(e.open)}
-                                onExitComplete={() => reset()}
+                                onExitComplete={() => {
+                                    reset();
+                                    setSelectedOption([]);
+                                }}
                                 size="sm"
                                 placement="center"
                             >
@@ -184,47 +193,16 @@ export default () =>
                                                             </Field.Root>
                                                             <Field.Root>
                                                                 <Field.Label>Permission</Field.Label>
-                                                                <Select.Root
-                                                                    multiple
-                                                                    closeOnSelect
-                                                                    collection={createListCollection({
-                                                                        items: permissions.map((item) => ({
-                                                                            label: item.name,
-                                                                            value: item.id,
-                                                                        })),
-                                                                    })}
-                                                                    onValueChange={handleSelectChange}
+                                                                <Select
+                                                                    isMulti
+                                                                    options={permissions.map((item) => ({
+                                                                        label: item.name,
+                                                                        value: item.id,
+                                                                    }))}
+                                                                    onChange={handleSelectChange}
                                                                     value={selectedOption}
-                                                                >
-                                                                    <Select.HiddenSelect />
-                                                                    <Select.Label>Select Permission</Select.Label>
-                                                                    <Select.Control>
-                                                                        <Select.Trigger>
-                                                                            <Select.ValueText placeholder="Select Permission" />
-                                                                        </Select.Trigger>
-                                                                        <Select.IndicatorGroup>
-                                                                            <Select.ClearTrigger />
-                                                                            <Select.Indicator />
-                                                                        </Select.IndicatorGroup>
-                                                                    </Select.Control>
-                                                                    <Portal container={contentRef}>
-                                                                        <Select.Positioner>
-                                                                            <Select.Content maxHeight="300px" overflowY="auto">
-                                                                                {createListCollection({
-                                                                                    items: permissions.map((item) => ({
-                                                                                        label: item.name,
-                                                                                        value: item.id,
-                                                                                    })),
-                                                                                }).items.map((permission) => (
-                                                                                    <Select.Item item={permission} key={permission.value}>
-                                                                                        {permission.label}
-                                                                                        <Select.ItemIndicator />
-                                                                                    </Select.Item>
-                                                                                ))}
-                                                                            </Select.Content>
-                                                                        </Select.Positioner>
-                                                                    </Portal>
-                                                                </Select.Root>
+                                                                    placeholder="Select Permission"
+                                                                />
                                                             </Field.Root>
                                                         </>
                                                     )}
@@ -279,7 +257,12 @@ export default () =>
                                                     onClick={() => {
                                                         setRole(roleMap);
 
-                                                        setSelectedOption(roleMap.permissions?.map((item) => item.id) ?? []);
+                                                        setSelectedOption(
+                                                            roleMap.permissions?.map((item) => ({
+                                                                label: item.name,
+                                                                value: item.id,
+                                                            })) ?? [],
+                                                        );
                                                         setModal('edit');
                                                         setOpen(true);
                                                     }}

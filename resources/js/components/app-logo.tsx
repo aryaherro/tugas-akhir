@@ -4,18 +4,9 @@ import AppLogoIcon from './app-logo-icon';
 export default function AppLogo() {
     return (
         <>
-            <Flex
-                aspectRatio="square"
-                boxSize="8"
-                alignItems="center"
-                justifyContent="center"
-                rounded="md"
-                // className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-md"
-            >
+            <Flex aspectRatio="square" boxSize="8" alignItems="center" justifyContent="center" rounded="md">
                 <Icon boxSize="5">
-                    <AppLogoIcon
-                    // className="size-5 fill-current text-white dark:text-black"
-                    />
+                    <AppLogoIcon />
                 </Icon>
             </Flex>
             <Grid ml="1" flex="auto" textAlign="left" fontSize="sm">

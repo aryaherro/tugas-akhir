@@ -7,7 +7,6 @@ import {
     ButtonGroup,
     Center,
     Checkbox,
-    createListCollection,
     Dialog,
     Field,
     Flex,
@@ -18,12 +17,12 @@ import {
     List,
     Pagination,
     Portal,
-    Select,
     Show,
     Stack,
     Table,
 } from '@chakra-ui/react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Select } from 'chakra-react-select';
 import { FormEventHandler, useRef, useState } from 'react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
@@ -71,11 +70,16 @@ export default () => {
         password: '',
         roles: undefined,
     });
-    const [selectedOption, setSelectedOption] = useState<number[]>([]);
+    const [selectedOption, setSelectedOption] = useState<
+        {
+            label: string;
+            value: number;
+        }[]
+    >([]);
 
     const handleSelectChange = (e: any) => {
-        setUser({ ...user, roles: e.value });
-        setSelectedOption(e.value);
+        setUser({ ...user, roles: e.map((item: { value: number; label: string }) => item.value) });
+        setSelectedOption(e);
     };
 
     const submit: FormEventHandler = (e) => {
@@ -228,7 +232,7 @@ export default () => {
                                                                         setUser({ ...user, password: '' });
                                                                     }}
                                                                 >
-                                                                    <Checkbox.HiddenInput id="checked" />
+                                                                    <Checkbox.HiddenInput />
                                                                     <Checkbox.Control />
                                                                     <Checkbox.Label>Ubah Password</Checkbox.Label>
                                                                 </Checkbox.Root>
@@ -250,8 +254,17 @@ export default () => {
                                                             </Show>
                                                         </Field.Root>
                                                         <Field.Root>
-                                                            {/* <Field.Label for="roles">Roles</Field.Label> */}
-                                                            <Select.Root
+                                                            <Select
+                                                                isMulti
+                                                                options={roles.map((item) => ({
+                                                                    label: item.name,
+                                                                    value: item.id,
+                                                                }))}
+                                                                onChange={handleSelectChange}
+                                                                value={selectedOption}
+                                                                placeholder="Select Role"
+                                                            />
+                                                            {/* <Select.Root
                                                                 id="roles"
                                                                 multiple
                                                                 closeOnSelect
@@ -292,7 +305,7 @@ export default () => {
                                                                         </Select.Content>
                                                                     </Select.Positioner>
                                                                 </Portal>
-                                                            </Select.Root>
+                                                            </Select.Root> */}
                                                         </Field.Root>
                                                     </>
                                                 )}
@@ -346,7 +359,12 @@ export default () => {
                                             <Button
                                                 onClick={() => {
                                                     setUser(userMap);
-                                                    setSelectedOption(userMap.roles?.map((role) => role.id) ?? []);
+                                                    setSelectedOption(
+                                                        userMap.roles?.map((role) => ({
+                                                            label: role.name,
+                                                            value: role.id,
+                                                        })) ?? [],
+                                                    );
                                                     setModal('edit');
                                                     setOpen(true);
                                                 }}

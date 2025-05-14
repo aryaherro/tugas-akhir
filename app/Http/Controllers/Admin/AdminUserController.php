@@ -16,7 +16,6 @@ class AdminUserController extends Controller
      */
     public function index()
     {
-        // dd(User::with('roles')->paginate(10)->withQueryString()->toJson());
         return Inertia::render('admin/user', [
             'users' => fn() => User::with('roles')->paginate(10)->withQueryString(),
             'roles' =>  fn() => Role::all(),
@@ -51,13 +50,6 @@ class AdminUserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // dd($request->all());
-        // $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|string|email|max:255|unique:users,email,',
-        //     'password' => 'nullable|string|min:8|confirmed',
-        // ]);
-
         $user = User::findOrFail($id);
         if ($request->input('name') !== $user->name) {
             $request->validate([

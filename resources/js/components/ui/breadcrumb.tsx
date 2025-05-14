@@ -1,9 +1,6 @@
 import { Breadcrumb as BreadcrumbChakra, VisuallyHidden } from '@chakra-ui/react';
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
 
-// function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
-//   return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
-// }
 
 function Breadcrumb({ ...props }: BreadcrumbChakra.RootProps) {
     return <BreadcrumbChakra.Root aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;

@@ -4,6 +4,7 @@ import { useSidebar } from '@/components/ui/SidebarContext';
 import { Tooltip } from '@/components/ui/tooltip';
 import { useInitials } from '@/hooks/use-initials';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
+import { hasRole } from '@/lib/utils';
 import { NavItem, type SharedData } from '@/types';
 import {
     Avatar,
@@ -68,14 +69,13 @@ const MENU_ITEMS: NavItem[] = [
 export default ({ children }: { children: React.ReactNode }) => {
     const { isOpen, toggleSidebar } = useSidebar();
     const [openMenu, setOpenMenu] = useState<string | null>(null);
-    // const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
     const sidebarWidth = isOpen ? '250px' : '60px';
 
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const getInitials = useInitials();
     const cleanup = useMobileNavigation();
-
+    // console.log('auth', auth);
     return (
         <Flex h="100vh" gap={0}>
             {/* Sidebar */}
@@ -89,19 +89,8 @@ export default ({ children }: { children: React.ReactNode }) => {
                 <Stack h="100vh" p={4} gap={4} overflowY="auto">
                     <Stack gap={1}>
                         <Flex flexDir="row" alignItems="center" justifyContent="center" textAlign="center">
-                            <Icon
-                                // pl={2}
-                                // pr={2}
-                                maxW={5}
-                                maxH={5}
-                                color={{ base: 'black', _dark: 'white' }}
-                                justifyContent="center"
-                                alignItems="center"
-                                mb={2}
-                            >
-                                <AppLogoIcon
-                                // className="h-6 w-6 fill-current text-black dark:text-white"
-                                />
+                            <Icon maxW={5} maxH={5} color={{ base: 'black', _dark: 'white' }} justifyContent="center" alignItems="center" mb={2}>
+                                <AppLogoIcon />
                             </Icon>
                             {isOpen ? (
                                 <Text fontSize="lg" fontWeight="bold" color={{ base: 'black', _dark: 'white' }}>
@@ -121,13 +110,12 @@ export default ({ children }: { children: React.ReactNode }) => {
                                 positioning={{ placement: 'right-end' }}
                                 contentProps={{ css: { '--tooltip-bg': 'tomato' } }}
                             >
+                                {/* {() => console.log(hasRole(item.role))} */}
                                 <Box key={item.id}>
                                     <LinkChakra
-                                        // {item.subItems?as={Link}:""}
-                                        hidden={!!(item.role && !auth.user.roles.some((role) => role.name === item.role))}
+                                        hidden={hasRole(item.role)}
                                         as={item.subItems ? undefined : Link}
                                         href={item.href}
-                                        // as={Link}
                                         display="flex"
                                         alignItems="center"
                                         p={2}
@@ -216,14 +204,7 @@ export default ({ children }: { children: React.ReactNode }) => {
                             {auth.user ? (
                                 <Menu.Root>
                                     <Menu.Trigger asChild>
-                                        <Button
-                                            boxSize="10"
-                                            rounded="full"
-                                            p="1"
-                                            _hover={{ bg: 'acc' }}
-                                            // variant="ghost" className="size-10 rounded-full p-1"
-                                            // hover:bg-accent hover:text-accent-foreground
-                                        >
+                                        <Button boxSize="10" rounded="full" p="1" _hover={{ bg: 'acc' }}>
                                             <AvatarGroup>
                                                 <Avatar.Root boxSize="8" overflow="hidden" rounded="full">
                                                     <Avatar.Fallback rounded="lg" textDecorationColor={{ base: 'black', _dark: 'white' }}>
@@ -237,9 +218,7 @@ export default ({ children }: { children: React.ReactNode }) => {
                                     <Portal>
                                         <Menu.Positioner>
                                             <Menu.Content w="56" alignItems="end">
-                                                {/* <Menu.ItemGroup p="0" lineHeight="normal"> */}
                                                 <Menu.Item alignItems="center" gap="2" px="1" py="1.5" textAlign="left" fontSize="sm" value="Profile">
-                                                    {/* <UserInfo user={user} showEmail={true} /> */}
                                                     <AvatarGroup>
                                                         <Avatar.Root h="8" w="8" overflow="hidden" rounded="full">
                                                             <Avatar.Fallback rounded="lg" textDecorationColor={{ base: 'black', _dark: 'white' }}>
@@ -253,11 +232,7 @@ export default ({ children }: { children: React.ReactNode }) => {
                                                             {auth.user.name}
                                                         </Text>
 
-                                                        <Text
-                                                            truncate
-                                                            fontSize="xs"
-                                                            // className="text-muted-foreground truncate text-xs"
-                                                        >
+                                                        <Text truncate fontSize="xs">
                                                             {auth.user.email}
                                                         </Text>
                                                     </Grid>
@@ -273,8 +248,6 @@ export default ({ children }: { children: React.ReactNode }) => {
                                                         dir="column"
                                                         border="none"
                                                         href={route('profile.edit')}
-                                                        // as="button"
-                                                        // prefetch
                                                         onClick={cleanup}
                                                     >
                                                         <Flex width="full" dir="column">

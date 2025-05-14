@@ -15,8 +15,6 @@ class AdminRoleController extends Controller
      */
     public function index()
     {
-
-        // return Role::with('permissions')->paginate(10)->withQueryString()->toJson();
         return Inertia::render('admin/role', [
             'roles' => fn() => Role::with('permissions')->paginate(10)->withQueryString(),
             'permissions' => fn() => Permission::all(),

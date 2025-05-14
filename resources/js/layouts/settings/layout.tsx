@@ -1,5 +1,3 @@
-// import Heading from '@/components/heading';
-// import { Separator } from '@/components2/ui/separator';
 import { type NavItem } from '@/types';
 import { Box, Button as ButtonChakra, Container, Flex, Heading, Link as LinkChakra, Separator, Text } from '@chakra-ui/react';
 import { Link } from '@inertiajs/react';
@@ -16,11 +14,6 @@ const sidebarNavItems: NavItem[] = [
         label: 'Password',
         href: '/settings/password',
     },
-    // {
-    //     title: 'Appearance',
-    //     href: '/settings/appearance',
-    //     icon: null,
-    // },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {

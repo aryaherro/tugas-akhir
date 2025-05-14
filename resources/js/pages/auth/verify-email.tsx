@@ -3,9 +3,8 @@ import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
 import AuthLayout from '@/layouts/auth-layout';
+import { Box, Button, Text } from '@chakra-ui/react';
 
 export default function VerifyEmail({ status }: { status?: string }) {
     const { post, processing } = useForm({});
@@ -21,21 +20,21 @@ export default function VerifyEmail({ status }: { status?: string }) {
             <Head title="Email verification" />
 
             {status === 'verification-link-sent' && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <Text mb={4} textAlign="center" fontSize="sm" fontWeight="medium" color="green.600">
                     A new verification link has been sent to the email address you provided during registration.
-                </div>
+                </Text>
             )}
 
-            <form onSubmit={submit} className="space-y-6 text-center">
-                <Button disabled={processing} variant="secondary">
+            <Box as="form" onSubmit={submit} spaceY={6} textAlign="center">
+                <Button disabled={processing}>
                     {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                     Resend verification email
                 </Button>
 
-                <TextLink href={route('logout')} method="post" className="mx-auto block text-sm">
+                <Button mx="auto" display="block" fontSize="sm" onClick={() => (window.location.href = route('logout'))}>
                     Log out
-                </TextLink>
-            </form>
+                </Button>
+            </Box>
         </AuthLayout>
     );
 }

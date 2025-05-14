@@ -1,11 +1,8 @@
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef, useState } from 'react';
 
-// import { Button } from '@/components/ui/button';
-
 import HeadingSmall from '@/components/heading-small';
 
-// import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Box, Button, Dialog, Field, Flex, Grid, Portal, Text } from '@chakra-ui/react';
 
@@ -88,15 +85,7 @@ export default function DeleteUser() {
                                             Cancel
                                         </Button>
                                     </Dialog.ActionTrigger>
-                                    <Button
-                                        //  variant="destructive"
-                                        bgColor="red"
-                                        textDecorationColor="white"
-                                        shadow="xs"
-                                        disabled={processing}
-                                        // asChild
-                                        type="submit"
-                                    >
+                                    <Button bgColor="red" textDecorationColor="white" shadow="xs" disabled={processing} type="submit">
                                         Delete account
                                     </Button>
                                 </Dialog.Footer>
