@@ -10,7 +10,6 @@ class Unit extends Model
 {
     protected $fillable = [
         'nama',
-        'plat_nomor',
     ];
 
     public function user(): BelongsToMany

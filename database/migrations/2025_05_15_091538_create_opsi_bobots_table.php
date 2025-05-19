@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('status_permintaans', function (Blueprint $table) {
+        Schema::create('opsi_bobots', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('kriteria_id')->constrained('kriterias')->onDelete('cascade');
             $table->string('nama');
+            $table->integer('nilai');
             $table->timestamps();
         });
     }
@@ -23,7 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permintaan_layanans');
-        Schema::dropIfExists('status_permintaans');
+        Schema::dropIfExists('opsi_bobots');
     }
 };

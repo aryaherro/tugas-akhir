@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PermintaanLayanan;
+use App\Models\Pasien;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
-class PermintaanLayananController extends Controller
+class PasienController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Inertia::render('kegiatan', [
-            'permintaans' => fn() => PermintaanLayanan::with(['kegiatan', 'user'])->paginate(10)->withQueryString(),
-        ]);
+        //
     }
 
     /**
@@ -37,7 +34,7 @@ class PermintaanLayananController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PermintaanLayanan $permintaanLayanan)
+    public function show(Pasien $pasien)
     {
         //
     }
@@ -45,7 +42,7 @@ class PermintaanLayananController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(PermintaanLayanan $permintaanLayanan)
+    public function edit(Pasien $pasien)
     {
         //
     }
@@ -53,7 +50,7 @@ class PermintaanLayananController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, PermintaanLayanan $permintaanLayanan)
+    public function update(Request $request, Pasien $pasien)
     {
         //
     }
@@ -61,7 +58,7 @@ class PermintaanLayananController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PermintaanLayanan $permintaanLayanan)
+    public function destroy(Pasien $pasien)
     {
         //
     }

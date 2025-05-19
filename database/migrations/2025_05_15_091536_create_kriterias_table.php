@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('status_permintaans', function (Blueprint $table) {
+        Schema::create('kriterias', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->integer('weight');
+            $table->enum('tipe', ['benefit', 'cost']);
             $table->timestamps();
         });
     }
@@ -23,7 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permintaan_layanans');
-        Schema::dropIfExists('status_permintaans');
+        Schema::dropIfExists('bobots');
+        Schema::dropIfExists('opsi_bobots');
+        Schema::dropIfExists('kriterias');
     }
 };

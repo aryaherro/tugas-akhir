@@ -14,6 +14,7 @@ import {
     Collapsible,
     Flex,
     Grid,
+    HStack,
     Icon,
     IconButton,
     Link as LinkChakra,
@@ -26,9 +27,9 @@ import {
 import { Link, usePage } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
-import { BsChat, BsChevronDown } from 'react-icons/bs';
+import { BsChevronDown } from 'react-icons/bs';
 import { FaUser } from 'react-icons/fa';
-import { MdCalendarMonth, MdClose, MdDashboard, MdSettings, MdStar } from 'react-icons/md';
+import { MdClose, MdDashboard, MdSettings, MdStar } from 'react-icons/md';
 import { RxHamburgerMenu } from 'react-icons/rx';
 
 const MENU_ITEMS: NavItem[] = [
@@ -40,28 +41,25 @@ const MENU_ITEMS: NavItem[] = [
     },
     {
         id: '2',
-        label: 'Tes',
-        href: route('tes'),
-        icon: MdCalendarMonth,
+        label: 'Kegiatan',
+        href: route('kegiatan.index'),
+        icon: MdStar,
     },
     {
         id: '3',
-        label: 'Messages',
-        icon: BsChat,
-        subItems: [
-            { id: '3-1', label: 'Inbox', icon: MdStar },
-            { id: '3-2', label: 'Sent', icon: MdStar },
-        ],
+        label: 'Tes',
+        href: route('tes'),
+        icon: MdStar,
     },
     {
-        id: '4',
+        id: '9',
         label: 'Admin',
         icon: MdSettings,
         role: 'admin',
         subItems: [
-            { id: '4-1', label: 'Permission', icon: MdStar, href: route('permissions.index') },
-            { id: '4-2', label: 'Role', icon: MdStar, href: route('roles.index') },
-            { id: '4-3', label: 'User', icon: FaUser, href: route('users.index') },
+            { id: '9-1', label: 'Permission', icon: MdStar, href: route('permissions.index') },
+            { id: '9-2', label: 'Role', icon: MdStar, href: route('roles.index') },
+            { id: '9-3', label: 'User', icon: FaUser, href: route('users.index') },
         ],
     },
 ];
@@ -204,7 +202,7 @@ export default ({ children }: { children: React.ReactNode }) => {
                             {auth.user ? (
                                 <Menu.Root>
                                     <Menu.Trigger asChild>
-                                        <Button boxSize="10" rounded="full" p="1" _hover={{ bg: 'acc' }}>
+                                        <HStack as={Button} dir="row" gap={2} p={1} bg={{ base: 'white', _dark: 'gray.800' }}>
                                             <AvatarGroup>
                                                 <Avatar.Root boxSize="8" overflow="hidden" rounded="full">
                                                     <Avatar.Fallback rounded="lg" textDecorationColor={{ base: 'black', _dark: 'white' }}>
@@ -213,7 +211,17 @@ export default ({ children }: { children: React.ReactNode }) => {
                                                     <Avatar.Image src={auth.user.avatar} alt={auth.user.name} />
                                                 </Avatar.Root>
                                             </AvatarGroup>
-                                        </Button>
+                                            <Grid flex="auto" textAlign="left" fontSize="sm" lineHeight="tight">
+                                                <Text truncate lineHeight="medium" fontWeight="semibold" color={{ base: 'black', _dark: 'white' }}>
+                                                    {auth.user.name}
+                                                </Text>
+                                                {Array.isArray(auth.user.roles) && auth.user.roles.length > 0 && (
+                                                    <Text truncate fontSize="xs" color={{ base: 'gray.500', _dark: 'gray.400' }}>
+                                                        Role : {auth.user.roles[0].name}
+                                                    </Text>
+                                                )}
+                                            </Grid>
+                                        </HStack>
                                     </Menu.Trigger>
                                     <Portal>
                                         <Menu.Positioner>

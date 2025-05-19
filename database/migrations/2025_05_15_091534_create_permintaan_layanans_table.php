@@ -15,16 +15,20 @@ return new class extends Migration
             $table->id();
             $table->date('tanggal');
             $table->foreignId('tipe_permintaan_id')->constrained('tipe_permintaans')->onDelete('cascade');
-            $table->foreignId('mobil_id')->constrained('mobils')->onDelete('cascade')->nullable();
-            $table->foreignId('unit_id')->constrained('units')->onDelete('cascade');
+            $table->foreignId('pasien_id')->constrained('pasiens')->onDelete('cascade');
+            $table->foreignId('triase_id')->constrained('triases')->onDelete('cascade');
+            $table->foreignId('penjamin_biaya_id')->constrained('penjamin_biayas')->onDelete('cascade');
+            $table->foreignId('unit_id')->constrained('units')->onDelete('cascade')->nullable();
             $table->foreignId('creator_id')->constrained('users')->onDelete('cascade')->nullable();
             $table->string('tujuan');
             $table->integer('kilometer');
             $table->foreignId('status_permintaan_id')->constrained('status_permintaans')->onDelete('cascade');
+            $table->foreignId('mobil_id')->constrained('mobils')->onDelete('cascade')->nullable();
             $table->foreignId('driver_id')->constrained('users')->onDelete('cascade')->nullable();
             $table->time('jam_berangkat')->nullable();
             $table->time('jam_kembali')->nullable();
             $table->integer('kilometer_terakhir')->nullable();
+            $table->integer('biaya')->nullable();
             $table->timestamps();
         });
     }

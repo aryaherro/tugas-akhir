@@ -3,6 +3,7 @@ import { usePage } from '@inertiajs/react';
 
 export const can = (permission: string | undefined) => {
     const page = usePage<SharedData>();
+    console.log(page);
     const { auth } = page.props;
     if (!auth) return false;
     return !!(permission && !auth.permissions.some((p) => p.name === permission));

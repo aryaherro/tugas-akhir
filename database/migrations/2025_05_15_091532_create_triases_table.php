@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('status_permintaans', function (Blueprint $table) {
+        Schema::create('triases', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->string('warna');
+            $table->string('keterangan');
             $table->timestamps();
         });
     }
@@ -23,7 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permintaan_layanans');
-        Schema::dropIfExists('status_permintaans');
+        Schema::dropIfExists('triases');
     }
 };

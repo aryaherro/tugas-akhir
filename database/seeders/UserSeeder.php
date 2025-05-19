@@ -24,5 +24,15 @@ class UserSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('12345678'),
         ])->assignRole($adminRole->name);
+
+        $driverRole = Role::where('name', 'driver')->first();
+        if (!$driverRole) {
+            throw new \Exception('Driver role not found.');
+        }
+        User::create([
+            'name' => 'Driver 1',
+            'email' => 'driver1@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
     }
 }

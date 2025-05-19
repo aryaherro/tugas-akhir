@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Pasien;
 use App\Models\StatusPermintaan;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,5 +21,9 @@ class DatabaseSeeder extends Seeder
         $this->call(MobilSeeder::class);
         $this->call(StatusPermintaanSeeder::class);
         $this->call(TipePermintaanSeeder::class);
+        $this->call(PasienSeeder::class);
+        $this->call(TriaseSeeder::class);
+        $this->call(PenjaminBiayaSeeder::class);
+        $this->call(UnitSeeder::class);
     }
 }
