@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PermintaanLayanan;
+use App\Models\TipePermintaan;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -23,7 +24,7 @@ class PermintaanLayananController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -31,9 +32,11 @@ class PermintaanLayananController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $permintaanLayanan = PermintaanLayanan::create([
+            'tanggal' => $request->tanggal,
+            'tipe_permintaan_id' => TipePermintaan::find($request->tipe_permintaan_id),
+        ]);
     }
-
     /**
      * Display the specified resource.
      */

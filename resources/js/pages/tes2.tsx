@@ -1,6 +1,7 @@
 import { SingleDatePickerPopup } from '@/components/DatePicker';
 import { DatePickerStyleConfig, defaultDatePickerStyle } from '@/components/DatePicker/type';
 import AppLayout from '@/layouts/app-layout';
+import { toaster, Toaster } from '@/components/ui/toaster';
 import { SharedData } from '@/types';
 import {
     Box,
@@ -17,8 +18,9 @@ import {
     Stack,
     useDisclosure,
 } from '@chakra-ui/react';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Select } from 'chakra-react-select';
+import { set } from 'lodash';
 import { useState } from 'react';
 
 //penjamin_biaya, status_permintaan, unit, tipe_permintaan
@@ -170,6 +172,7 @@ export default function Tes2({
         setSelectedPenjaminOption(e);
     };
     const handleSelectUnitChange = (e: any) => {
+        setSelectedUnitOption(e);
         setPermintaan({
             ...permintaan,
             unit: {
@@ -189,10 +192,34 @@ export default function Tes2({
             kilometer: e.valueAsNumber,
         });
     };
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        setPermintaan({
+            ...permintaan,
+            tanggal: popupSelectedDate,
+        });
+        router.post(
+            route('permintaan.store'),
+            permintaan,
+            {
+                onSuccess: () => {
+                    reset();
+                    setCollapsibleOpen(false);
+                    toaster.create({
+                        title: 'Permintaan created',
+                        type: 'success',
+                    });
+                },
+            }
+        );
+    };
+
     return (
         <AppLayout>
             <Head title="Kegiatan" />
             <Flex h="full" flex="auto" flexDir="column" gap="4" rounded="xl" p="4">
+                <Toaster />
                 <Box p={4}>
                     <Heading size="lg" mb={4}>
                         Tes
@@ -312,24 +339,9 @@ export default function Tes2({
                                             <NumberInput.Input />
                                         </NumberInput.Root>
                                     </Field.Root>
-                                    <Field.Root>
-                                        <Field.Label>Country</Field.Label>
-                                        <NativeSelect.Root>
-                                            <NativeSelect.Field name="country">
-                                                <For each={['United Kingdom', 'Canada', 'United States']}>
-                                                    {(item) => (
-                                                        <option key={item} value={item}>
-                                                            {item}
-                                                        </option>
-                                                    )}
-                                                </For>
-                                            </NativeSelect.Field>
-                                            <NativeSelect.Indicator />
-                                        </NativeSelect.Root>
-                                    </Field.Root>
                                 </Fieldset.Content>
 
-                                <Button type="submit" alignSelf="flex-start">
+                                <Button onClick={handleSubmit} type="submit" alignSelf="flex-start">
                                     Submit
                                 </Button>
                             </Fieldset.Root>

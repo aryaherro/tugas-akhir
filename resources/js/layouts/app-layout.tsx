@@ -52,6 +52,12 @@ const MENU_ITEMS: NavItem[] = [
         icon: MdStar,
     },
     {
+        id: '4',
+        label: 'Tes2',
+        href: route('tes2'),
+        icon: MdStar,
+    },
+    {
         id: '9',
         label: 'Admin',
         icon: MdSettings,
