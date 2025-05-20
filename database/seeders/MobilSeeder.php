@@ -23,7 +23,7 @@ class MobilSeeder extends Seeder
                 'plat_nomor' => 'B 5678 EF',
             ],
             [
-                'nama' => 'APV1',
+                'nama' => 'APV',
                 'plat_nomor' => 'B 9101 GH',
             ],
             [

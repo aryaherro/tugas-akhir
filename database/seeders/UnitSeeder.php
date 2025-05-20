@@ -39,9 +39,6 @@ class UnitSeeder extends Seeder
                 'nama' => 'Thaif',
             ],
             [
-                'nama' => 'Binroh',
-            ],
-            [
                 'nama' => 'Poli Umum',
             ],
             [
@@ -71,6 +68,10 @@ class UnitSeeder extends Seeder
             [
                 'nama' => 'Homecare',
             ],
+            [
+                'nama' => 'Hemodialisa',
+            ],
+
         ];
         foreach ($data as $item) {
             Unit::create([
