@@ -3,31 +3,16 @@ import { DatePickerStyleConfig, defaultDatePickerStyle } from '@/components/Date
 import { Toaster } from '@/components/ui/toaster';
 import AppLayout from '@/layouts/app-layout';
 import { hasRole } from '@/lib/utils';
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Center,
-    Dialog,
-    Field,
-    Flex,
-    Grid,
-    IconButton,
-    Input,
-    Pagination,
-    Portal,
-    Stack,
-    Table,
-    useDisclosure,
-} from '@chakra-ui/react';
+import { SharedData } from '@/types';
+import { Box, Button, ButtonGroup, Center, Flex, Grid, HStack, IconButton, Input, Pagination, Table, Text, useDisclosure } from '@chakra-ui/react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { Select } from 'chakra-react-select';
 import { useRef, useState } from 'react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
-type UnitType = {
+//penjamin_biaya, status_permintaan, unit, tipe_permintaan
+type StandarType = {
     id: number;
-    name: string;
+    nama: string;
 };
 
 type UserType = {
@@ -42,40 +27,51 @@ type MobilType = {
     plat_nomor: string;
 };
 
-type TipePermintaanType = {
+type PasienType = {
     id: number;
-    name: string;
+    nama: string;
+    no_rm: number;
 };
 
-type StatusPermintaanType = {
+type TriaseType = {
     id: number;
-    name: string;
+    warna: string;
+    keterangan: string;
 };
 
 type PermintaanType = {
-    id: number | null;
-    tanggal: Date;
-    tipe_permintaan: TipePermintaanType;
+    id: null;
+    tanggal: Date | null;
+    tipe_permintaan: StandarType;
+    pasien: PasienType;
+    triase: TriaseType;
+    penjamin_biaya: StandarType;
     mobil: MobilType;
-    unit: UnitType;
+    unit: StandarType;
     creator: UserType | null;
     tujuan: string;
     kilometer: number;
-    status_permintaan: StatusPermintaanType;
+    status_permintaan: StandarType;
     driver: UserType | null;
     jam_berangkat: string | null;
     jam_kembali: string | null;
     kilometer_terakhir: number | null;
+    biaya: number | null;
 };
 
 export default () =>
     // { children }: { children: React.ReactNode }
     {
-        // const page = usePage<SharedData>();
-        // const { auth } = page.props;
+        const page = usePage<SharedData>();
+        const { auth } = page.props;
+
         const pickerDisclosure = useDisclosure();
+        const pickerFilterDisclosure = useDisclosure();
         const [popupSelectedDate, setPopupSelectedDate] = useState(new Date());
+        const [popupFilterDate, setPopupFilterDate] = useState(new Date());
         const [datePickerStyle, setDatePickerStyle] = useState<DatePickerStyleConfig>(defaultDatePickerStyle);
+        const [pickerFilterStringDate, setPickerFilterStringDate] = useState<string | null>(null);
+
         type PermintaanResponse = {
             currentPage: number;
             perPage: number;
@@ -97,18 +93,22 @@ export default () =>
             processing,
         } = useForm<PermintaanType>({
             id: null,
-            tanggal: new Date(),
-            tipe_permintaan: { id: 0, name: '' },
+            tanggal: null,
+            tipe_permintaan: { id: 0, nama: '' },
+            pasien: { id: 0, nama: '', no_rm: 0 },
+            triase: { id: 0, warna: '', keterangan: '' },
+            penjamin_biaya: { id: 0, nama: '' },
             mobil: { id: 0, nama: '', plat_nomor: '' },
-            unit: { id: 0, name: '' },
-            creator: { id: 0, name: '', email: '' },
+            unit: { id: 0, nama: '' },
+            creator: auth.user,
             tujuan: '',
-            kilometer: 0,
-            status_permintaan: { id: 0, name: '' },
+            kilometer: 1,
+            status_permintaan: { id: 0, nama: '' },
             driver: null,
             jam_berangkat: null,
             jam_kembali: null,
             kilometer_terakhir: null,
+            biaya: 0,
         });
         const [selectedOption, setSelectedOption] = useState<
             {
@@ -189,106 +189,61 @@ export default () =>
         // };
 
         const contentRef = useRef<HTMLDivElement>(null);
+
+        const handleSetFilterDate = (date: Date) => {
+            setPopupFilterDate(date);
+            const $year = date.getFullYear();
+            const $month = date.getMonth() + 1;
+            const $day = date.getDate() + 1;
+            const $tanggalString = new Date($year, $month - 1, $day);
+            setPickerFilterStringDate($tanggalString.toISOString().substring(0, 10));
+            router.reload({
+                only: ['permintaans'],
+                data: {
+                    tanggal: $tanggalString.toISOString().substring(0, 10),
+                },
+            });
+        };
+
         return (
             <AppLayout>
                 <Head title="Kegiatan" />
                 <Flex h="full" flex="auto" flexDir="column" gap="4" rounded="xl" p="4">
                     <Grid gridAutoRows="min-content" gap="4" md={{ gridColumn: '3' }}>
                         <Toaster />
-
+                        <Text fontSize="2xl" fontWeight="bold">
+                            Permintaan Layanan
+                        </Text>
                         <Box display="flex" justifyContent="space-Between" alignItems="center">
-                            <Dialog.Root
-                                lazyMount
-                                open={open}
-                                onOpenChange={(e) => setOpen(e.open)}
-                                onExitComplete={() => {
-                                    reset();
-                                    setSelectedOption([]);
-                                }}
-                                size="sm"
-                                placement="center"
-                            >
-                                <Dialog.Trigger asChild>
-                                    <Button variant="surface" onClick={() => setModal('create')}>
-                                        Buat Permintaan
-                                    </Button>
-                                </Dialog.Trigger>
-                                <Portal>
-                                    <Dialog.Backdrop />
-                                    <Dialog.Positioner>
-                                        <Dialog.Content ref={contentRef}>
-                                            <Dialog.Header>
-                                                <Dialog.Title>
-                                                    {modal === 'create'
-                                                        ? 'Buat Permintaan'
-                                                        : modal === 'edit'
-                                                          ? 'Edit Permintaan'
-                                                          : 'Delete Permintaan'}
-                                                </Dialog.Title>
-                                            </Dialog.Header>
-                                            <Dialog.Body pb="4">
-                                                <Stack gap="4">
-                                                    {modal === 'delete' ? (
-                                                        <Dialog.Description>
-                                                            Apakah anda yakin ingin menghapus permintaan <strong>{permintaan.unit.name}</strong>?
-                                                        </Dialog.Description>
-                                                    ) : (
-                                                        <>
-                                                            <Field.Root>
-                                                                <Field.Label>Tanggal</Field.Label>
-                                                                <SingleDatePickerPopup
-                                                                    isOpen={pickerDisclosure.open}
-                                                                    onClose={pickerDisclosure.onClose}
-                                                                    onOpen={pickerDisclosure.onOpen}
-                                                                    selectedDate={popupSelectedDate}
-                                                                    onSetDate={setPopupSelectedDate}
-                                                                    datePickerStyle={datePickerStyle}
-                                                                >
-                                                                    <Input
-                                                                        value={popupSelectedDate.toLocaleDateString('id-ID')}
-                                                                        onClick={pickerDisclosure.onOpen}
-                                                                        readOnly
-                                                                        placeholder="Pilih Tanggal"
-                                                                    />
-                                                                    {/* <Button>{format(popupSelectedDate, 'dd/MM/yyyy')}</Button> */}
-                                                                </SingleDatePickerPopup>
-                                                            </Field.Root>
-                                                            <Field.Root>
-                                                                <Field.Label>Permission</Field.Label>
-                                                                <Select
-                                                                    isMulti
-                                                                    // options={permissions.map((item) => ({
-                                                                    //     label: item.name,
-                                                                    //     value: item.id,
-                                                                    // }))}
-                                                                    // onChange={handleSelectChange}
-                                                                    value={selectedOption}
-                                                                    placeholder="Select Permission"
-                                                                />
-                                                            </Field.Root>
-                                                        </>
-                                                    )}
-                                                </Stack>
-                                            </Dialog.Body>
-                                            <Dialog.Footer>
-                                                <Dialog.ActionTrigger asChild>
-                                                    <Button variant="surface" color="black">
-                                                        Cancel
-                                                    </Button>
-                                                </Dialog.ActionTrigger>
-                                                <Button
-                                                    color={modal === 'create' ? 'green' : modal === 'edit' ? 'blue' : 'red'}
-                                                    variant="surface"
-                                                    loading={processing}
-                                                    // onClick={submit}
-                                                >
-                                                    {modal === 'create' ? 'Create' : modal === 'edit' ? 'Update' : 'Delete'}
-                                                </Button>
-                                            </Dialog.Footer>
-                                        </Dialog.Content>
-                                    </Dialog.Positioner>
-                                </Portal>
-                            </Dialog.Root>
+                            <HStack>
+                                <SingleDatePickerPopup
+                                    isOpen={pickerFilterDisclosure.open}
+                                    onClose={pickerFilterDisclosure.onClose}
+                                    onOpen={pickerFilterDisclosure.onOpen}
+                                    selectedDate={popupFilterDate}
+                                    onSetDate={handleSetFilterDate}
+                                    datePickerStyle={datePickerStyle}
+                                >
+                                    <Input
+                                        value={popupFilterDate.toLocaleDateString('id-ID')}
+                                        onClick={pickerFilterDisclosure.onOpen}
+                                        readOnly
+                                        placeholder="Pilih Tanggal"
+                                    />
+                                </SingleDatePickerPopup>
+                                <Button
+                                    variant="surface"
+                                    color="red"
+                                    onClick={() => {
+                                        setPopupFilterDate(new Date());
+                                        router.visit(route('permintaan-layanan.index'), {
+                                            only: ['permintaans'],
+                                        });
+                                    }}
+                                >
+                                    Reset
+                                </Button>
+                            </HStack>
                         </Box>
 
                         <Box overflowX="auto">
@@ -325,18 +280,20 @@ export default () =>
                                         permintaans.data.map((permintaanMap, index) => (
                                             <Table.Row key={permintaanMap.id}>
                                                 <Table.Cell>{index + 1}</Table.Cell>
-                                                <Table.Cell>{new Date(permintaanMap.tanggal).toLocaleDateString('id-ID')}</Table.Cell>
-                                                <Table.Cell>{permintaanMap.tipe_permintaan.name}</Table.Cell>
-                                                <Table.Cell>{permintaanMap.mobil.nama}</Table.Cell>
+                                                <Table.Cell>
+                                                    {permintaanMap.tanggal ? new Date(permintaanMap.tanggal).toLocaleDateString('id-ID') : '-'}
+                                                </Table.Cell>
+                                                <Table.Cell>{permintaanMap.tipe_permintaan.nama}</Table.Cell>
+                                                <Table.Cell>{permintaanMap.mobil?.nama}</Table.Cell>
                                                 {hasRole('admin') && (
                                                     <>
-                                                        <Table.Cell>{permintaanMap.unit.name}</Table.Cell>
+                                                        <Table.Cell>{permintaanMap.unit.nama}</Table.Cell>
                                                         <Table.Cell>{permintaanMap.creator?.name}</Table.Cell>
                                                     </>
                                                 )}
                                                 <Table.Cell>{permintaanMap.tujuan}</Table.Cell>
                                                 <Table.Cell>{permintaanMap.kilometer}</Table.Cell>
-                                                <Table.Cell>{permintaanMap.status_permintaan.name}</Table.Cell>
+                                                <Table.Cell>{permintaanMap.status_permintaan.nama}</Table.Cell>
                                                 <Table.Cell>{permintaanMap.driver?.name}</Table.Cell>
                                                 <Table.Cell>{permintaanMap.jam_berangkat}</Table.Cell>
                                                 <Table.Cell>{permintaanMap.jam_kembali}</Table.Cell>

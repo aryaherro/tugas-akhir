@@ -15,24 +15,67 @@ class UnitSeeder extends Seeder
     {
         $data = [
             [
+                'nama' => 'Ar Radhiin',
+            ],
+            [
                 'nama' => 'IGD',
-            ],
-            [
-                'nama' => 'Rawat Inap',
-            ],
-            [
-                'nama' => 'Makkah',
             ],
             [
                 'nama' => 'Madinah',
             ],
             [
-                'nama' => 'Kamar Operasi',
+                'nama' => 'Makkah',
             ],
             [
-                'nama' => 'Layanan Transportasi',
+                'nama' => 'Picu/Nicu/Perina',
+            ],
+            [
+                'nama' => 'Ar Rayyan',
+            ],
+            [
+                'nama' => 'R.R Intensif',
+            ],
+            [
+                'nama' => 'Thaif',
+            ],
+            [
+                'nama' => 'Binroh',
+            ],
+            [
+                'nama' => 'Poli Umum',
+            ],
+            [
+                'nama' => 'Al Kautsar',
+            ],
+            [
+                'nama' => 'Ar Raudhah',
+            ],
+            [
+                'nama' => 'ICU',
+            ],
+            [
+                'nama' => 'Multazam',
+            ],
+            [
+                'nama' => 'Rawat Jalan',
+            ],
+            [
+                'nama' => 'An Nisa',
+            ],
+            [
+                'nama' => 'Poli syaraf',
+            ],
+            [
+                'nama' => 'Ponex IGD',
+            ],
+            [
+                'nama' => 'Homecare',
             ],
         ];
-        Unit::insert($data);
+        foreach ($data as $item) {
+            Unit::create([
+                'nama' => $item['nama'],
+            ]);
+        }
     }
 }

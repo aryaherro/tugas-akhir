@@ -15,6 +15,10 @@ use App\Models\PenjaminBiaya;
 use App\Models\Mobil;
 use App\Models\Unit;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Date;
+
+use function PHPSTORM_META\map;
 
 Route::get('/', function () {
     // return Inertia::render('welcome');
@@ -23,76 +27,149 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(
     function () {
-        Route::get('/tes', function () {
-
-            return Inertia::render('tes', [
-                'criteria' => [
-                    [
-                        'nama' => 'Harga',
-                        'weight' => 0.4,
-                        'tipe' => 'cost'
-                    ],
-                    [
-                        'nama' => 'Kualitas',
-                        'weight' => 0.3,
-                        'tipe' => 'benefit'
-                    ],
-                    [
-                        'nama' => 'Layanan',
-                        'weight' => 0.3,
-                        'tipe' => 'benefit'
-                    ],
+        Route::get('/antrian', function () {
+            $criteria = [
+                [
+                    'nama' => 'Tipe Permintaan',
+                    'weight' => 0.3,
+                    'tipe' => 'benefit'
                 ],
-                'alternatives' => [
-                    [
-                        'nama' => 'Produk A',
-                        'values' => [50, 7, 9]
-                    ],
-                    [
-                        'nama' => 'Produk B',
-                        'values' => [30, 9, 8]
-                    ],
-                    [
-                        'nama' => 'Produk C',
-                        'values' => [40, 8, 7]
-                    ],
-                ]
+                [
+                    'nama' => 'Triase',
+                    'weight' => 0.25,
+                    'tipe' => 'benefit'
+                ],
+                [
+                    'nama' => 'Jarak',
+                    'weight' => 0.15,
+                    'tipe' => 'benefit'
+                ],
+                [
+                    'nama' => 'Biaya',
+                    'weight' => 0.2,
+                    'tipe' => 'benefit'
+                ],
+                [
+                    'nama' => 'Penjamin',
+                    'weight' => 0.1,
+                    'tipe' => 'benefit'
+                ],
+            ];
+            $alternatives = array();
+            $i = 0;
+            if (request()->has('tanggal') && request()->tanggal != null) {
+                $tanggal = Carbon::create(request()->tanggal)->format('Y-m-d');
+                $permintaan = PermintaanLayanan::with([
+                    'tipe_permintaan',
+                    'pasien',
+                    'triase',
+                    'penjamin_biaya',
+                    'mobil',
+                    'unit',
+                    'creator',
+                    'status_permintaan',
+                    'driver',
+                ])->whereDate('tanggal', $tanggal)->get();
+            } else {
+                $permintaan = PermintaanLayanan::with([
+                    'tipe_permintaan',
+                    'pasien',
+                    'triase',
+                    'penjamin_biaya',
+                    'mobil',
+                    'unit',
+                    'creator',
+                    'status_permintaan',
+                    'driver',
+                ])->get();
+            }
+            foreach ($permintaan as $key) {
+                array_push($alternatives, [
+                    'tanggal' => $key->tanggal,
+                    'nama' => $key->pasien->no_rm . ' - ' . $key->pasien->nama,
+                    'values' => [
+                        $key->tipe_permintaan->bobot,
+                        $key->triase->bobot,
+                        $key->kilometer > 9 ? 3 : ($key->kilometer > 4 ? 2 : 1),
+                        $key->biaya > 500000 ? 1 : ($key->biaya > 250000 ? 2 : 3),
+                        $key->penjamin_biaya->bobot
+                    ]
+                ]);
+                $i++;
+            }
+            return Inertia::render('antrian', [
+                'criteria' => $criteria,
+                'alternatives' => $alternatives,
             ]);
-        })->name('tes');
-    }
-);
-Route::middleware(['auth', 'verified'])->group(
-    function () {
-        Route::get('/tes2', function () {
-            $tipe_permintaan = TipePermintaan::all();
-            $pasien = Pasien::all();
-            $triase = Triase::all();
-            $penjamin_biaya = PenjaminBiaya::all();
-            $mobil = Mobil::all();
-            $unit = Unit::all();
-            $creator = User::withoutRole('driver')->get();
-            $status_permintaan = StatusPermintaan::all();
-            $driver = User::role('driver')->get();
-            return Inertia::render('tes2', [
-                'tipe_permintaan' => $tipe_permintaan,
-                'pasien' => $pasien,
-                'triase' => $triase,
-                'penjamin_biaya' => $penjamin_biaya,
-                'mobil' => $mobil,
-                'unit' => $unit,
-                'creator' => $creator,
-                'status_permintaan' => $status_permintaan,
-                'driver' => $driver,
-            ]);
-        })->name('tes2');
+        })->name('antrian');
     }
 );
 
-Route::resource('kegiatan', PermintaanLayananController::class)->except(['show', 'create', 'edit']);
+Route::resource('permintaan-layanan', PermintaanLayananController::class)->except(['show', 'edit']);
+
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
+        $criteria = [
+            [
+                'nama' => 'Tipe Permintaan',
+                'weight' => 0.3,
+                'tipe' => 'benefit'
+            ],
+            [
+                'nama' => 'Triase',
+                'weight' => 0.25,
+                'tipe' => 'benefit'
+            ],
+            [
+                'nama' => 'Jarak',
+                'weight' => 0.15,
+                'tipe' => 'benefit'
+            ],
+            [
+                'nama' => 'Biaya',
+                'weight' => 0.2,
+                'tipe' => 'benefit'
+            ],
+            [
+                'nama' => 'Penjamin',
+                'weight' => 0.1,
+                'tipe' => 'benefit'
+            ],
+        ];
+        $alternatives = array();
+        $i = 0;
+        $tanggal = Carbon::create(Now())->format('Y-m-d');
+        $permintaan = PermintaanLayanan::with([
+            'tipe_permintaan',
+            'pasien',
+            'triase',
+            'penjamin_biaya',
+            'mobil',
+            'unit',
+            'creator',
+            'status_permintaan',
+            'driver',
+        ])->whereDate('tanggal', $tanggal)->get();
+        foreach ($permintaan as $key) {
+            array_push($alternatives, [
+                'tanggal' => $key->tanggal,
+                'nama' => $key->pasien->no_rm . ' - ' . $key->pasien->nama,
+                'values' => [
+                    $key->tipe_permintaan->bobot,
+                    $key->triase->bobot,
+                    $key->kilometer > 9 ? 3 : ($key->kilometer > 4 ? 2 : 1),
+                    $key->biaya > 500000 ? 1 : ($key->biaya > 250000 ? 2 : 3),
+                    $key->penjamin_biaya->bobot
+                ]
+            ]);
+            $i++;
+        }
+        return Inertia::render('dashboard', [
+            'criteria' => $criteria,
+            'alternatives' => $alternatives,
+        ]);
     })->name('dashboard');
 });
 Route::middleware(['role:admin'])->group(function () {

@@ -13,7 +13,7 @@ class PasienSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 400; $i++) {
 
             Pasien::create([
                 'nama' => fake()->name(),

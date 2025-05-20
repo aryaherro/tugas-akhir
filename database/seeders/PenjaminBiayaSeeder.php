@@ -16,12 +16,15 @@ class PenjaminBiayaSeeder extends Seeder
         $data = [
             [
                 'nama' => 'Pribadi',
+                'bobot' => 3,
             ],
             [
                 'nama' => 'Asuransi Kesehatan',
+                'bobot' => 2,
             ],
             [
                 'nama' => 'BPJS Kesehatan',
+                'bobot' => 1,
             ],
         ];
 

@@ -1,26 +1,12 @@
 import { SingleDatePickerPopup } from '@/components/DatePicker';
 import { DatePickerStyleConfig, defaultDatePickerStyle } from '@/components/DatePicker/type';
-import AppLayout from '@/layouts/app-layout';
 import { toaster, Toaster } from '@/components/ui/toaster';
+import AppLayout from '@/layouts/app-layout';
+import { hasRole } from '@/lib/utils';
 import { SharedData } from '@/types';
-import {
-    Box,
-    Button,
-    Collapsible,
-    Field,
-    Fieldset,
-    Flex,
-    For,
-    Heading,
-    Input,
-    NativeSelect,
-    NumberInput,
-    Stack,
-    useDisclosure,
-} from '@chakra-ui/react';
+import { Box, Button, Collapsible, Field, Fieldset, Flex, Heading, Input, NumberInput, Show, Stack, useDisclosure } from '@chakra-ui/react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Select } from 'chakra-react-select';
-import { set } from 'lodash';
 import { useState } from 'react';
 
 //penjamin_biaya, status_permintaan, unit, tipe_permintaan
@@ -55,7 +41,7 @@ type TriaseType = {
 
 type PermintaanType = {
     id: null;
-    tanggal: Date;
+    tanggal: Date | null;
     tipe_permintaan: StandarType;
     pasien: PasienType;
     triase: TriaseType;
@@ -106,7 +92,7 @@ export default function Tes2({
         processing,
     } = useForm<PermintaanType>({
         id: null,
-        tanggal: new Date(),
+        tanggal: null,
         tipe_permintaan: { id: 0, nama: '' },
         pasien: { id: 0, nama: '', no_rm: 0 },
         triase: { id: 0, warna: '', keterangan: '' },
@@ -115,7 +101,7 @@ export default function Tes2({
         unit: { id: 0, nama: '' },
         creator: auth.user,
         tujuan: '',
-        kilometer: 0,
+        kilometer: 1,
         status_permintaan: { id: 0, nama: '' },
         driver: null,
         jam_berangkat: null,
@@ -193,26 +179,31 @@ export default function Tes2({
         });
     };
 
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
+    const handleSetDate = (date: Date) => {
+        const $year = date.getFullYear();
+        const $month = date.getMonth();
+        const $day = date.getDate();
+        const $tanggalString = new Date($year, $month, $day);
         setPermintaan({
             ...permintaan,
-            tanggal: popupSelectedDate,
+            tanggal: $tanggalString,
         });
-        router.post(
-            route('permintaan.store'),
-            permintaan,
-            {
-                onSuccess: () => {
-                    reset();
-                    setCollapsibleOpen(false);
-                    toaster.create({
-                        title: 'Permintaan created',
-                        type: 'success',
-                    });
-                },
-            }
-        );
+        setPopupSelectedDate(date);
+    };
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        // console.log(permintaan);
+        router.post(route('permintaan-layanan.store'), permintaan, {
+            onSuccess: () => {
+                reset();
+                setCollapsibleOpen(false);
+                toaster.create({
+                    title: 'Permintaan created',
+                    type: 'success',
+                });
+            },
+        });
     };
 
     return (
@@ -222,7 +213,7 @@ export default function Tes2({
                 <Toaster />
                 <Box p={4}>
                     <Heading size="lg" mb={4}>
-                        Tes
+                        Input Kegiatan
                     </Heading>
                     <Collapsible.Root unmountOnExit open={CollapsibleOpen}>
                         <Collapsible.Trigger paddingY="3" asChild>
@@ -236,24 +227,26 @@ export default function Tes2({
                                 </Stack>
 
                                 <Fieldset.Content>
-                                    <Field.Root>
-                                        <Field.Label>Pilih Tanggal</Field.Label>
-                                        <SingleDatePickerPopup
-                                            isOpen={pickerDisclosure.open}
-                                            onClose={pickerDisclosure.onClose}
-                                            onOpen={pickerDisclosure.onOpen}
-                                            selectedDate={popupSelectedDate}
-                                            onSetDate={setPopupSelectedDate}
-                                            datePickerStyle={datePickerStyle}
-                                        >
-                                            <Input
-                                                value={popupSelectedDate.toLocaleDateString('id-ID')}
-                                                onClick={pickerDisclosure.onOpen}
-                                                readOnly
-                                                placeholder="Pilih Tanggal"
-                                            />
-                                        </SingleDatePickerPopup>
-                                    </Field.Root>
+                                    <Show when={hasRole('admin')}>
+                                        <Field.Root>
+                                            <Field.Label>Pilih Tanggal</Field.Label>
+                                            <SingleDatePickerPopup
+                                                isOpen={pickerDisclosure.open}
+                                                onClose={pickerDisclosure.onClose}
+                                                onOpen={pickerDisclosure.onOpen}
+                                                selectedDate={popupSelectedDate}
+                                                onSetDate={handleSetDate}
+                                                datePickerStyle={datePickerStyle}
+                                            >
+                                                <Input
+                                                    value={popupSelectedDate.toLocaleDateString('id-ID')}
+                                                    onClick={pickerDisclosure.onOpen}
+                                                    readOnly
+                                                    placeholder="Pilih Tanggal"
+                                                />
+                                            </SingleDatePickerPopup>
+                                        </Field.Root>
+                                    </Show>
 
                                     <Field.Root>
                                         <Field.Label>Tipe Permintaan</Field.Label>

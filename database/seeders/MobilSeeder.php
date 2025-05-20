@@ -19,18 +19,27 @@ class MobilSeeder extends Seeder
                 'plat_nomor' => 'B 1234 CD',
             ],
             [
-                'nama' => 'Hiace',
+                'nama' => 'HIACE',
                 'plat_nomor' => 'B 5678 EF',
             ],
             [
-                'nama' => 'APV 1',
+                'nama' => 'APV1',
                 'plat_nomor' => 'B 9101 GH',
             ],
             [
-                'nama' => 'APV 2',
+                'nama' => 'APV2',
                 'plat_nomor' => 'B 1213 IJ',
             ],
+            [
+                'nama' => 'TRAGA',
+                'plat_nomor' => 'B 1415 KL',
+            ]
         ];
-        Mobil::insert($data);
+        foreach ($data as $item) {
+            Mobil::create([
+                'nama' => $item['nama'],
+                'plat_nomor' => $item['plat_nomor'],
+            ]);
+        }
     }
 }

@@ -42,19 +42,19 @@ const MENU_ITEMS: NavItem[] = [
     {
         id: '2',
         label: 'Kegiatan',
-        href: route('kegiatan.index'),
+        href: route('permintaan-layanan.index'),
         icon: MdStar,
     },
     {
         id: '3',
-        label: 'Tes',
-        href: route('tes'),
+        label: 'Input Kegiatan',
+        href: route('permintaan-layanan.create'),
         icon: MdStar,
     },
     {
         id: '4',
-        label: 'Tes2',
-        href: route('tes2'),
+        label: 'Antrian',
+        href: route('antrian'),
         icon: MdStar,
     },
     {
@@ -63,9 +63,9 @@ const MENU_ITEMS: NavItem[] = [
         icon: MdSettings,
         role: 'admin',
         subItems: [
-            { id: '9-1', label: 'Permission', icon: MdStar, href: route('permissions.index') },
-            { id: '9-2', label: 'Role', icon: MdStar, href: route('roles.index') },
-            { id: '9-3', label: 'User', icon: FaUser, href: route('users.index') },
+            { id: '9-1', label: 'Permission', icon: MdStar, href: route('permissions.index'), role: 'admin' },
+            { id: '9-2', label: 'Role', icon: MdStar, href: route('roles.index'), role: 'admin' },
+            { id: '9-3', label: 'User', icon: FaUser, href: route('users.index'), role: 'admin' },
         ],
     },
 ];
@@ -114,10 +114,9 @@ export default ({ children }: { children: React.ReactNode }) => {
                                 positioning={{ placement: 'right-end' }}
                                 contentProps={{ css: { '--tooltip-bg': 'tomato' } }}
                             >
-                                {/* {() => console.log(hasRole(item.role))} */}
                                 <Box key={item.id}>
                                     <LinkChakra
-                                        hidden={hasRole(item.role)}
+                                        hidden={item.role != undefined ? !hasRole(item.role) : false}
                                         as={item.subItems ? undefined : Link}
                                         href={item.href}
                                         display="flex"

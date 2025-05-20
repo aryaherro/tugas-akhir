@@ -34,5 +34,58 @@ class UserSeeder extends Seeder
             'email' => 'driver1@driver.com',
             'password' => Hash::make('12345678'),
         ])->assignRole($driverRole->name);
+
+        User::create([
+            'name' => 'Resa Sholeman',
+            'email' => 'resa@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
+
+        User::create([
+            'name' => 'Yohanes Murdianto',
+            'email' => 'yohanes@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
+
+        User::create([
+            'name' => 'Ardiansyah',
+            'email' => 'ardiansyah@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
+        User::create([
+            'name' => 'Muchammad Tezar Pebrian',
+            'email' => 'tezar@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
+
+        User::create([
+            'name' => 'R. Arya Herro Kusumo Buditama',
+            'email' => 'arya@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
+
+        User::create([
+            'name' => 'Ardian Dwi Tristanto',
+            'email' => 'ardian@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
+
+        User::create([
+            'name' => 'Moh. Ibadis Sholikhin',
+            'email' => 'ibadis@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
+
+        User::create([
+            'name' => 'Furqon Hadi Wibowo',
+            'email' => 'furqon@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
+
+        User::create([
+            'name' => 'Mas Shofiy Ahmad Alfirosy',
+            'email' => 'shofiy@driver.com',
+            'password' => Hash::make('12345678'),
+        ])->assignRole($driverRole->name);
     }
 }

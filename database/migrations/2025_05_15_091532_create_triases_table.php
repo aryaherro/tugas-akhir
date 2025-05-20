@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('warna');
             $table->string('keterangan');
+            $table->integer('bobot');
             $table->timestamps();
         });
     }

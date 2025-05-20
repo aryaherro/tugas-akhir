@@ -30,6 +30,10 @@ class StatusPermintaanSeeder extends Seeder
                 'nama' => 'Dibatalkan',
             ],
         ];
-        StatusPermintaan::insert($data);
+        foreach ($data as $item) {
+            StatusPermintaan::create([
+                'nama' => $item['nama'],
+            ]);
+        }
     }
 }

@@ -26,6 +26,10 @@ class PermintaanLayanan extends Model
         'biaya',
     ];
 
+    // protected $casts = [
+    //     'tanggal'  => 'date:Y-m-d',
+    // ];
+
     public function tipe_permintaan(): BelongsTo
     {
         return $this->belongsTo(TipePermintaan::class, 'tipe_permintaan_id');

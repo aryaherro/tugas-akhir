@@ -9,6 +9,7 @@ class TipePermintaan extends Model
 {
     protected $fillable = [
         'nama',
+        'bobot'
     ];
 
     public function permintaans_layanan(): HasMany

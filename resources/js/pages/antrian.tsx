@@ -1,6 +1,10 @@
+import { SingleDatePickerPopup } from '@/components/DatePicker';
+import { DatePickerStyleConfig, defaultDatePickerStyle } from '@/components/DatePicker/type';
 import AppLayout from '@/layouts/app-layout';
-import { Box, Flex, Heading, HStack, List, Slider, Table, Text } from '@chakra-ui/react';
-import { Head } from '@inertiajs/react';
+import { Box, Button, Flex, Heading, HStack, Input, List, Table, Text, useDisclosure } from '@chakra-ui/react';
+import { Head, router } from '@inertiajs/react';
+import { format } from 'date-fns';
+import { useState } from 'react';
 
 type CriteriaType = {
     nama: string;
@@ -8,6 +12,7 @@ type CriteriaType = {
     tipe: 'benefit' | 'cost';
 };
 type AlternativeType = {
+    tanggal: string;
     nama: string;
     values: number[];
 };
@@ -47,18 +52,67 @@ interface SAWModuleProps {
 
 export default function SAWModule({ criteria, alternatives }: SAWModuleProps) {
     const rankedAlternatives = calculateScores(alternatives, criteria).sort((a, b) => Number(b.score) - Number(a.score));
+    const pickerFilterDisclosure = useDisclosure();
+    const [popupSelectedDate, setPopupSelectedDate] = useState(new Date());
+    const [popupFilterDate, setPopupFilterDate] = useState(new Date());
+    const [datePickerStyle, setDatePickerStyle] = useState<DatePickerStyleConfig>(defaultDatePickerStyle);
+    const [pickerFilterStringDate, setPickerFilterStringDate] = useState<string | null>(null);
 
+    const handleSetFilterDate = (date: Date) => {
+        setPopupFilterDate(date);
+        const $year = date.getFullYear();
+        const $month = date.getMonth() + 1;
+        const $day = date.getDate() + 1;
+        const $tanggalString = new Date($year, $month - 1, $day);
+        setPickerFilterStringDate($tanggalString.toISOString().substring(0, 10));
+        router.reload({
+            only: ['alternatives'],
+            data: {
+                tanggal: $tanggalString.toISOString().substring(0, 10),
+            },
+        });
+    };
     return (
         <AppLayout>
             <Head title="Kegiatan" />
             <Flex h="full" flex="auto" flexDir="column" gap="4" rounded="xl" p="4">
                 <Box p={4}>
                     <Heading size="lg" mb={4}>
-                        SAW Module
+                        Antrian Berdasarkan Tanggal
                     </Heading>
+                    <HStack>
+                        <SingleDatePickerPopup
+                            isOpen={pickerFilterDisclosure.open}
+                            onClose={pickerFilterDisclosure.onClose}
+                            onOpen={pickerFilterDisclosure.onOpen}
+                            selectedDate={popupFilterDate}
+                            onSetDate={handleSetFilterDate}
+                            datePickerStyle={datePickerStyle}
+                        >
+                            <Input
+                                value={format(popupFilterDate, 'dd/MM/yyyy')}
+                                onClick={pickerFilterDisclosure.onOpen}
+                                readOnly
+                                placeholder="Pilih Tanggal"
+                            />
+                        </SingleDatePickerPopup>
+                        <Button
+                            variant="surface"
+                            color="red"
+                            onClick={() => {
+                                setPopupFilterDate(new Date());
+                                router.visit(route('antrian'), {
+                                    only: ['alternatives'],
+                                });
+                            }}
+                        >
+                            Reset
+                        </Button>
+                    </HStack>
                     <Table.Root variant="line" mb={6}>
                         <Table.Header>
                             <Table.Row>
+                                <Table.ColumnHeader>Tanggal</Table.ColumnHeader>
                                 <Table.ColumnHeader>Alternatif</Table.ColumnHeader>
                                 {criteria.map((c, i) => (
                                     <Table.ColumnHeader key={i}>
@@ -70,6 +124,7 @@ export default function SAWModule({ criteria, alternatives }: SAWModuleProps) {
                         <Table.Body>
                             {alternatives.map((alt, i) => (
                                 <Table.Row key={i}>
+                                    <Table.Cell>{alt.tanggal}</Table.Cell>
                                     <Table.Cell>{alt.nama}</Table.Cell>
                                     {alt.values.map((v, j) => (
                                         <Table.Cell key={j}>{v}</Table.Cell>
@@ -79,7 +134,7 @@ export default function SAWModule({ criteria, alternatives }: SAWModuleProps) {
                         </Table.Body>
                     </Table.Root>
 
-                    {criteria.map((criteriaitem, i) => (
+                    {/* {criteria.map((criteriaitem, i) => (
                         <Slider.Root
                             maxW="sm"
                             size="sm"
@@ -114,7 +169,7 @@ export default function SAWModule({ criteria, alternatives }: SAWModuleProps) {
                             </Slider.Track>
                             <Slider.Thumbs />
                         </Slider.Control>
-                    </Slider.Root>
+                    </Slider.Root> */}
 
                     <Heading size="md" mb={2}>
                         Peringkat:

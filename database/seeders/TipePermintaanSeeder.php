@@ -16,17 +16,23 @@ class TipePermintaanSeeder extends Seeder
         $data = [
             [
                 'nama' => 'Rujuk',
-            ],
-            [
-                'nama' => 'P. Pulang',
+                'bobot' => 4
             ],
             [
                 'nama' => 'J. Pasien',
+                'bobot' => 3
+            ],
+            [
+                'nama' => 'P. Pulang',
+                'bobot' => 2
             ],
             [
                 'nama' => 'Jenazah',
+                'bobot' => 1
             ],
         ];
-        TipePermintaan::insert($data);
+        foreach ($data as $item) {
+            TipePermintaan::create($item);
+        }
     }
 }

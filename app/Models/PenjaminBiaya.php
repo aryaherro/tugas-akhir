@@ -9,6 +9,7 @@ class PenjaminBiaya extends Model
 {
     protected $fillable = [
         'nama',
+        'bobot'
     ];
 
     public function permintaanLayanan(): HasMany

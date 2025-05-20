@@ -3,9 +3,9 @@ import { DayType } from '@/components/DatePicker/Calendar/type';
 import Week from '@/components/DatePicker/Week';
 import { type DatePickerStyleConfig, defaultDatePickerStyle } from '@/components/DatePicker/type';
 import { Box, Center, HStack, IconButton, type IconButtonProps, Text } from '@chakra-ui/react';
-import { addMonths, format, isSameDay } from 'date-fns';
+import { addMonths, format } from 'date-fns';
 import { Struct, pipe } from 'effect';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export type SingleDatePickerProps = {
     selectedDate: Date;
@@ -47,7 +47,13 @@ export default function SingleDatePickerPopup({ selectedDate, onSetDate, datePic
         _focus: {},
     };
 
-    const handleDayRulesFn = useCallback((date: Date) => (isSameDay(date, selectedDate) ? DayType.ACTIVE : DayType.NORMAL), [selectedDate]);
+    const handleDayRulesFn = (date: Date): DayType => {
+        if (format(date, 'yyyy/MM/dd') === format(selectedDate, 'yyyy/MM/dd')) {
+            return DayType.ACTIVE;
+        }
+
+        return DayType.NORMAL;
+    };
 
     return (
         <Box bgColor={mergedDatePickerStyle.bgColor} borderRadius="5px">

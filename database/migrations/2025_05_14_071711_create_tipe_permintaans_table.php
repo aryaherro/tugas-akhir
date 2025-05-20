@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tipe_permintaans', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->integer('bobot');
             $table->timestamps();
         });
     }

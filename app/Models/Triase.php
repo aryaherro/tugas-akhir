@@ -10,6 +10,7 @@ class Triase extends Model
     protected $fillable = [
         'warna',
         'keterangan',
+        'bobot'
     ];
 
     public function permintaanLayanan(): HasMany

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('penjamin_biayas', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->integer('bobot');
             $table->timestamps();
         });
     }
