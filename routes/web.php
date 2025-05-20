@@ -86,7 +86,7 @@ Route::middleware(['auth', 'verified'])->group(
             foreach ($permintaan as $key) {
                 array_push($alternatives, [
                     'tanggal' => $key->tanggal,
-                    'nama' => $key->pasien->no_rm . ' - ' . $key->pasien->nama,
+                    'nama' => $key->unit->nama . ' - ' . $key->pasien->no_rm . ' - ' . $key->pasien->nama,
                     'values' => [
                         $key->tipe_permintaan->bobot,
                         $key->triase->bobot,

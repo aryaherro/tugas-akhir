@@ -6,41 +6,41 @@ import { Head, router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { useState } from 'react';
 
-type CriteriaType = {
+type CriteriaType={
     nama: string;
     weight: number;
-    tipe: 'benefit' | 'cost';
+    tipe: 'benefit'|'cost';
 };
-type AlternativeType = {
+type AlternativeType={
     tanggal: string;
     nama: string;
     values: number[];
 };
 
 function normalizeMatrix(alternatives: AlternativeType[], criteria: CriteriaType[]) {
-    const numCriteria = criteria.length;
-    const maxVals = Array(numCriteria).fill(0);
-    const minVals = Array(numCriteria).fill(Infinity);
+    const numCriteria=criteria.length;
+    const maxVals=Array(numCriteria).fill(0);
+    const minVals=Array(numCriteria).fill(Infinity);
 
-    for (let j = 0; j < numCriteria; j++) {
+    for (let j=0; j<numCriteria; j++) {
         for (const alt of alternatives) {
-            maxVals[j] = Math.max(maxVals[j], alt.values[j]);
-            minVals[j] = Math.min(minVals[j], alt.values[j]);
+            maxVals[j]=Math.max(maxVals[j], alt.values[j]);
+            minVals[j]=Math.min(minVals[j], alt.values[j]);
         }
     }
 
     return alternatives.map((alt) => {
-        const normValues = alt.values.map((val, j) => {
-            return criteria[j].tipe === 'benefit' ? val / maxVals[j] : minVals[j] / val;
+        const normValues=alt.values.map((val, j) => {
+            return criteria[j].tipe==='benefit'? val/maxVals[j]:minVals[j]/val;
         });
         return { ...alt, normValues };
     });
 }
 
 function calculateScores(alternatives: AlternativeType[], criteria: CriteriaType[]) {
-    const normalized = normalizeMatrix(alternatives, criteria);
+    const normalized=normalizeMatrix(alternatives, criteria);
     return normalized.map((alt) => {
-        const score = alt.normValues.reduce((acc, val, j) => acc + val * criteria[j].weight, 0);
+        const score=alt.normValues.reduce((acc, val, j) => acc+val*criteria[j].weight, 0);
         return { name: alt.nama, score: score.toFixed(4) };
     });
 }
@@ -51,19 +51,19 @@ interface SAWModuleProps {
 }
 
 export default function SAWModule({ criteria, alternatives }: SAWModuleProps) {
-    const rankedAlternatives = calculateScores(alternatives, criteria).sort((a, b) => Number(b.score) - Number(a.score));
-    const pickerFilterDisclosure = useDisclosure();
-    const [popupSelectedDate, setPopupSelectedDate] = useState(new Date());
-    const [popupFilterDate, setPopupFilterDate] = useState(new Date());
-    const [datePickerStyle, setDatePickerStyle] = useState<DatePickerStyleConfig>(defaultDatePickerStyle);
-    const [pickerFilterStringDate, setPickerFilterStringDate] = useState<string | null>(null);
+    const rankedAlternatives=calculateScores(alternatives, criteria).sort((a, b) => Number(b.score)-Number(a.score));
+    const pickerFilterDisclosure=useDisclosure();
+    const [popupSelectedDate, setPopupSelectedDate]=useState(new Date());
+    const [popupFilterDate, setPopupFilterDate]=useState(new Date());
+    const [datePickerStyle, setDatePickerStyle]=useState<DatePickerStyleConfig>(defaultDatePickerStyle);
+    const [pickerFilterStringDate, setPickerFilterStringDate]=useState<string|null>(null);
 
-    const handleSetFilterDate = (date: Date) => {
+    const handleSetFilterDate=(date: Date) => {
         setPopupFilterDate(date);
-        const $year = date.getFullYear();
-        const $month = date.getMonth() + 1;
-        const $day = date.getDate() + 1;
-        const $tanggalString = new Date($year, $month - 1, $day);
+        const $year=date.getFullYear();
+        const $month=date.getMonth()+1;
+        const $day=date.getDate()+1;
+        const $tanggalString=new Date($year, $month-1, $day);
         setPickerFilterStringDate($tanggalString.toISOString().substring(0, 10));
         router.reload({
             only: ['alternatives'],
