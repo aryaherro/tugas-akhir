@@ -351,32 +351,6 @@ class PermintaanLayananSeeder extends Seeder
                 "biaya" => 331000,
             ],
             [
-                "tanggal" => "09/01/2024",
-                "unit" => "Picu/Nicu/Perina",
-                "tujuan" => "RSAL",
-                "tipe_permintaan_id" => "Rujuk",
-                "penjamin" => "BPJS Kesehatan",
-                "driver" => "Muchammad Tezar Pebrian",
-                "mobil" => "TRAGA",
-                "jam_berangkat" => "16.00.00",
-                "jam_kembali" => "18.00.00",
-                "kilometer" => 10552,
-                "biaya" => 187000,
-            ],
-            [
-                "tanggal" => "11/01/2024",
-                "unit" => "Thaif",
-                "tujuan" => "RSUD Dr. Soetomo",
-                "tipe_permintaan_id" => "Rujuk",
-                "penjamin" => "BPJS Kesehatan",
-                "driver" => "Muchammad Tezar Pebrian",
-                "mobil" => "HIACE",
-                "jam_berangkat" => "17.00.00",
-                "jam_kembali" => "19.00.00",
-                "kilometer" => 42422,
-                "biaya" => 331000,
-            ],
-            [
                 "tanggal" => "11/01/2024",
                 "unit" => "Ar Radhiin",
                 "tujuan" => "RSUD Dr. Soetomo",
@@ -17773,12 +17747,10 @@ class PermintaanLayananSeeder extends Seeder
 
         ];
         foreach ($data as $item) {
-            if ($item['unit'] == null || $item['unit'] == '') {
-                dd($item);
-            }
             PermintaanLayanan::create([
                 'tanggal' => Carbon::createFromFormat('d/m/Y', $item['tanggal'])->format('Y-m-d'),
-                'unit_id' => Unit::where('nama', $item['unit'])->first()->id,
+                //'unit_id' => Unit::where('nama', $item['unit'])->first()->id,
+                'unit_id' => 1,
                 'tujuan' => $item['tujuan'],
                 'tipe_permintaan_id' => TipePermintaan::where('nama', $item['tipe_permintaan_id'])->first()->id,
                 'penjamin_biaya_id' => PenjaminBiaya::where('nama', $item['penjamin'])->first()->id,
