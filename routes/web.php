@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Date;
 
 use function PHPSTORM_META\map;
 
+Route::get('/tes', function () {
+    return Inertia::render('tes');
+})->name('tes');
+
 Route::get('/', function () {
     // return Inertia::render('welcome');
     return redirect()->route('dashboard');
