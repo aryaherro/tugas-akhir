@@ -2,9 +2,9 @@ import { Box, Button, HStack, Input, InputGroup, Table } from '@chakra-ui/react'
 import { Select } from 'chakra-react-select';
 import { useMemo, useState } from 'react';
 
-const DataTable = () => {
+const DataTable=() => {
     // Sample data
-    const initialData = [
+    const initialData=[
         { id: 1, name: 'Product A', price: 99.99, stock: 24 },
         { id: 2, name: 'Product B', price: 149.99, stock: 15 },
         { id: 3, name: 'Product C', price: 199.99, stock: 8 },
@@ -14,53 +14,54 @@ const DataTable = () => {
         { id: 7, name: 'Product G', price: 89.99, stock: 18 },
     ];
 
+
     // State management
-    const [sortBy, setSortBy] = useState<keyof (typeof initialData)[0] | null>(null);
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5);
-    const [filterValue, setFilterValue] = useState('');
+    const [sortBy, setSortBy]=useState<keyof (typeof initialData)[0]|null>(null);
+    const [sortOrder, setSortOrder]=useState<'asc'|'desc'>('asc');
+    const [currentPage, setCurrentPage]=useState(1);
+    const [itemsPerPage, setItemsPerPage]=useState(5);
+    const [filterValue, setFilterValue]=useState('');
 
     // Filtering logic
-    const filteredData = useMemo(() => {
+    const filteredData=useMemo(() => {
         if (!filterValue) return initialData;
 
-        const lowerFilter = filterValue.toLowerCase();
+        const lowerFilter=filterValue.toLowerCase();
         return initialData.filter((item) => Object.values(item).some((value) => String(value).toLowerCase().includes(lowerFilter)));
     }, [initialData, filterValue]);
 
     // Sorting logic
-    const sortedData = useMemo(() => {
+    const sortedData=useMemo(() => {
         return [...filteredData].sort((a, b) => {
             if (!sortBy) return 0;
-            const aValue = a[sortBy];
-            const bValue = b[sortBy];
+            const aValue=a[sortBy];
+            const bValue=b[sortBy];
 
-            if (typeof aValue === 'number' && typeof bValue === 'number') {
-                return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+            if (typeof aValue==='number'&&typeof bValue==='number') {
+                return sortOrder==='asc'? aValue-bValue:bValue-aValue;
             }
 
-            return String(aValue).localeCompare(String(bValue)) * (sortOrder === 'asc' ? 1 : -1);
+            return String(aValue).localeCompare(String(bValue))*(sortOrder==='asc'? 1:-1);
         });
     }, [filteredData, sortBy, sortOrder]);
 
     // Pagination logic
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+    const indexOfLastItem=currentPage*itemsPerPage;
+    const indexOfFirstItem=indexOfLastItem-itemsPerPage;
+    const currentItems=sortedData.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages=Math.ceil(sortedData.length/itemsPerPage);
 
     // Select options
-    const pageSizeOptions = [
+    const pageSizeOptions=[
         { value: 5, label: '5 per page' },
         { value: 10, label: '10 per page' },
         { value: 20, label: '20 per page' },
         { value: filteredData.length, label: 'Show all' },
     ];
 
-    const handleSort = (column: keyof (typeof initialData)[0]) => {
-        if (sortBy === column) {
-            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    const handleSort=(column: keyof (typeof initialData)[0]) => {
+        if (sortBy===column) {
+            setSortOrder(sortOrder==='asc'? 'desc':'asc');
         } else {
             setSortBy(column);
             setSortOrder('asc');
@@ -88,19 +89,19 @@ const DataTable = () => {
                 <Table.Header bg="gray.100">
                     <Table.Row>
                         <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('id')} width="15%">
-                            ID {sortBy === 'id' && (sortOrder === 'asc' ? '↑' : '↓')}
+                            ID {sortBy==='id'&&(sortOrder==='asc'? '↑':'↓')}
                         </Table.ColumnHeader>
 
                         <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('name')}>
-                            Product {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                            Product {sortBy==='name'&&(sortOrder==='asc'? '↑':'↓')}
                         </Table.ColumnHeader>
 
                         <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('price')} width="20%">
-                            Price {sortBy === 'price' && (sortOrder === 'asc' ? '↑' : '↓')}
+                            Price {sortBy==='price'&&(sortOrder==='asc'? '↑':'↓')}
                         </Table.ColumnHeader>
 
                         <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('stock')} width="15%">
-                            Stock {sortBy === 'stock' && (sortOrder === 'asc' ? '↑' : '↓')}
+                            Stock {sortBy==='stock'&&(sortOrder==='asc'? '↑':'↓')}
                         </Table.ColumnHeader>
                     </Table.Row>
                 </Table.Header>
@@ -122,16 +123,16 @@ const DataTable = () => {
                             <HStack justifyContent="space-between" py={2}>
                                 <HStack gap={3}>
                                     <Button
-                                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage(Math.max(1, currentPage-1))}
+                                        disabled={currentPage===1}
                                         variant="outline"
                                         size="sm"
                                     >
                                         Previous
                                     </Button>
                                     <Button
-                                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                                        disabled={currentPage >= totalPages}
+                                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage+1))}
+                                        disabled={currentPage>=totalPages}
                                         variant="outline"
                                         size="sm"
                                     >
@@ -144,7 +145,7 @@ const DataTable = () => {
 
                                 {/* Items per page selector */}
                                 <Select
-                                    value={pageSizeOptions.find((opt) => opt.value === itemsPerPage)}
+                                    value={pageSizeOptions.find((opt) => opt.value===itemsPerPage)}
                                     onChange={(selectedOption) => {
                                         if (selectedOption) {
                                             setItemsPerPage(selectedOption.value);
