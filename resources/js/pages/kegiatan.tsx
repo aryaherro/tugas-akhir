@@ -1,370 +1,434 @@
-import { SingleDatePickerPopup } from '@/components/DatePicker';
-import { DatePickerStyleConfig, defaultDatePickerStyle } from '@/components/DatePicker/type';
-import { Toaster } from '@/components/ui/toaster';
+import { toaster, Toaster } from '@/components/ui/toaster';
+import { useFilteredData } from '@/hooks/useFilteredData';
+import { useSortedData } from '@/hooks/useSortedData';
 import AppLayout from '@/layouts/app-layout';
-import { hasRole } from '@/lib/utils';
-import { SharedData } from '@/types';
-import { Box, Button, ButtonGroup, Center, Flex, Grid, HStack, IconButton, Input, Pagination, Table, Text, useDisclosure } from '@chakra-ui/react';
+import { ExportToCSV, ExportToExcel, ExportToPDF } from '@/lib/exporters';
+import { Box, Button, Dialog, Flex, Grid, HStack, Input, InputGroup, Portal, Stack, Table, Text } from '@chakra-ui/react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { useRef, useState } from 'react';
-import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
+import { Select } from 'chakra-react-select';
+import { FormEventHandler, useCallback, useState } from 'react';
+
+const getNestedValue = (obj: any, path: string) => path.split('.').reduce((acc, part) => acc?.[part], obj);
 
 //penjamin_biaya, status_permintaan, unit, tipe_permintaan
-type StandarType={
+type StandarType = {
     id: number;
     nama: string;
 };
 
-type UserType={
+type UserType = {
     id: number;
     name: string;
     email: string;
 };
 
-type MobilType={
+type MobilType = {
     id: number;
     nama: string;
     plat_nomor: string;
 };
 
-type PasienType={
+type PasienType = {
     id: number;
     nama: string;
     no_rm: number;
 };
 
-type TriaseType={
+type TriaseType = {
     id: number;
     warna: string;
     keterangan: string;
 };
 
-type PermintaanType={
-    id: null;
-    tanggal: Date|null;
+type PermintaanType = {
+    id: number | null;
+    tanggal: Date | null;
     tipe_permintaan: StandarType;
     pasien: PasienType;
     triase: TriaseType;
     penjamin_biaya: StandarType;
-    mobil: MobilType;
     unit: StandarType;
-    creator: UserType|null;
+    creator: UserType | null;
     tujuan: string;
-    kilometer: number|null;
+    kilometer: number | null;
     status_permintaan: StandarType;
-    driver: UserType|null;
-    jam_berangkat: string|null;
-    jam_kembali: string|null;
-    kilometer_terakhir: number|null;
-    biaya: number|null;
+    mobil: MobilType;
+    driver: UserType | null;
+    jam_berangkat: string | null;
+    jam_kembali: string | null;
+    kilometer_terakhir: number | null;
+    biaya: number | null;
 };
 
-export default () =>
-// { children }: { children: React.ReactNode }
-{
-    const page=usePage<SharedData>();
-    const { auth }=page.props;
+const exportColumns = [
+    'No',
+    'Tanggal',
+    'Tipe Permintaan',
+    'Pasien',
+    'Triase',
+    'Penjamin Biaya',
+    'Unit',
+    'Creator',
+    'Tujuan',
+    'Kilometer',
+    'Status Permintaan',
+    'Mobil',
+    'Driver',
+    'Jam Berangkat',
+    'Jam Kembali',
+    'Kilometer Terakhir',
+    'Biaya',
+];
 
-    const pickerDisclosure=useDisclosure();
-    const pickerFilterDisclosure=useDisclosure();
-    const [popupSelectedDate, setPopupSelectedDate]=useState(new Date());
-    const [popupFilterDate, setPopupFilterDate]=useState(new Date());
-    const [datePickerStyle, setDatePickerStyle]=useState<DatePickerStyleConfig>(defaultDatePickerStyle);
-    const [pickerFilterStringDate, setPickerFilterStringDate]=useState<string|null>(null);
+export default () => {
+    const initialData = usePage<{ permintaans: PermintaanType[] }>().props.permintaans;
 
-    type PermintaanResponse={
-        currentPage: number;
-        perPage: number;
-        total: number;
-        data: PermintaanType[];
-        [key: string]: unknown;
-        // Add other properties like meta, links if needed
+    const [sortBy, setSortBy] = useState<string | null>(null);
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [filterValue, setFilterValue] = useState('');
+    const [isExporting, setIsExporting] = useState(false);
+
+    const filteredData = useFilteredData(initialData, filterValue);
+
+    const sortedData = useSortedData(filteredData, sortBy, sortOrder);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+    const [open, setOpen] = useState(false);
+
+    const formatCurrency = (value: number | null) => (value !== null ? value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : 'N/A');
+
+    const pageSizeOptions = [
+        { value: 5, label: '5 per page' },
+        { value: 10, label: '10 per page' },
+        { value: 20, label: '20 per page' },
+        { value: 50, label: '50 per page' },
+        { value: 100, label: '100 per page' },
+        { value: filteredData.length, label: 'Show all' },
+    ];
+
+    const handleSort = (columnPath: string) => {
+        if (sortBy === columnPath) {
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortBy(columnPath);
+            setSortOrder('asc');
+        }
+        setCurrentPage(1);
     };
 
-    const { permintaans, filters }=usePage<{ permintaans: PermintaanResponse; filters: any }>().props;
-    // const { permissions } = usePage<{ permissions: PermissionType[] }>().props;
-    const [open, setOpen]=useState(false);
-    const [modal, setModal]=useState('');
+    const getExportData = useCallback(() => {
+        return sortedData.map((item, index) => ({
+            No: index + 1,
+            Tanggal: item.tanggal,
+            'Tipe Permintaan': item.tipe_permintaan?.nama || '-',
+            Pasien: item.pasien?.nama || '-',
+            Triase: item.triase?.warna || '-',
+            'Penjamin Biaya': item.penjamin_biaya?.nama || '-',
+            Unit: item.unit?.nama || '-',
+            Creator: item.creator?.name || '-',
+            Tujuan: item.tujuan,
+            Kilometer: item.kilometer,
+            'Status Permintaan': item.status_permintaan?.nama || '-',
+            Mobil: item.mobil?.nama || '-',
+            Driver: item.driver?.name || '-',
+            'Jam Berangkat': item.jam_berangkat,
+            'Jam Kembali': item.jam_kembali,
+            'Kilometer Terakhir': item.kilometer_terakhir,
+            Biaya: item.biaya?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) || 'N/A',
+        }));
+    }, [sortedData]);
+
+    const handleExport = useCallback(
+        async (type: 'csv' | 'excel' | 'pdf') => {
+            setIsExporting(true);
+            const exportData = getExportData();
+            const filename = 'data-permintaan';
+            if (type === 'csv') ExportToCSV(exportData, filename);
+            else if (type === 'excel') ExportToExcel(exportData, filename);
+            else if (type === 'pdf') ExportToPDF(exportColumns, exportData, filename);
+            setIsExporting(false);
+        },
+        [getExportData],
+    );
 
     const {
         data: permintaan,
         setData: setPermintaan,
+        post,
         reset,
         processing,
-    }=useForm<PermintaanType>({
+        errors,
+    } = useForm<PermintaanType>({
         id: null,
         tanggal: null,
         tipe_permintaan: { id: 0, nama: '' },
         pasien: { id: 0, nama: '', no_rm: 0 },
         triase: { id: 0, warna: '', keterangan: '' },
         penjamin_biaya: { id: 0, nama: '' },
-        mobil: { id: 0, nama: '', plat_nomor: '' },
         unit: { id: 0, nama: '' },
-        creator: auth.user,
+        creator: null,
         tujuan: '',
         kilometer: null,
         status_permintaan: { id: 0, nama: '' },
+        mobil: { id: 0, nama: '', plat_nomor: '' },
         driver: null,
         jam_berangkat: null,
         jam_kembali: null,
         kilometer_terakhir: null,
-        biaya: 0,
+        biaya: null,
     });
-    const [selectedOption, setSelectedOption]=useState<
-        {
-            label: string;
-            value: number;
-        }[]
-    >([]);
-
-    // const handleSelectChange = (e: any) => {
-    //     setRole({
-    //         ...role,
-    //         permissions: e.map((item: { value: number; label: string }) => ({
-    //             id: item.value,
-    //             name: item.label,
-    //         })),
-    //     });
-    //     setSelectedOption(e);
-    // };
-
-    // const submit: FormEventHandler = (e) => {
-    //     e.preventDefault();
-    //     if (modal === 'create') {
-    //         router.post(
-    //             route('roles.store'),
-    //             {
-    //                 name: role.name,
-    //                 guard_name: role.guard_name,
-    //                 permissions: role.permissions,
-    //             },
-    //             {
-    //                 onSuccess: () => {
-    //                     reset();
-    //                     setOpen(false);
-    //                     toaster.create({
-    //                         title: 'Role created',
-    //                         type: 'success',
-    //                     });
-    //                 },
-    //             },
-    //         );
-    //     } else if (modal === 'edit') {
-    //         if (role.id !== null) {
-    //             router.put(
-    //                 route('roles.update', { id: role.id }),
-    //                 {
-    //                     name: role.name,
-    //                     guard_name: role.guard_name,
-    //                     permissions: role.permissions,
-    //                 },
-    //                 {
-    //                     onSuccess: () => {
-    //                         reset();
-    //                         setOpen(false);
-    //                         toaster.create({
-    //                             title: 'Role updated',
-    //                             type: 'success',
-    //                         });
-    //                     },
-    //                 },
-    //             );
-    //         }
-    //     } else if (modal === 'delete') {
-    //         if (role.id !== null) {
-    //             router.delete(route('roles.destroy', { id: role.id }), {
-    //                 onSuccess: () => {
-    //                     reset();
-    //                     setOpen(false);
-    //                     toaster.create({
-    //                         title: 'Role deleted',
-    //                         type: 'error',
-    //                     });
-    //                 },
-    //             });
-    //         }
-    //     }
-    //     reset();
-    //     setOpen(false);
-    // };
-
-    const contentRef=useRef<HTMLDivElement>(null);
-
-    const handleSetFilterDate=(date: Date) => {
-        setPopupFilterDate(date);
-        const $year=date.getFullYear();
-        const $month=date.getMonth()+1;
-        const $day=date.getDate()+1;
-        const $tanggalString=new Date($year, $month-1, $day);
-        setPickerFilterStringDate($tanggalString.toISOString().substring(0, 10));
-        router.reload({
-            only: ['permintaans'],
-            data: {
-                tanggal: $tanggalString.toISOString().substring(0, 10),
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+        router.delete(route('permintaan-layanan.destroy', { id: permintaan.id }), {
+            onSuccess: () => {
+                reset();
+                setOpen(false);
+                toaster.create({
+                    title: 'Permintaan deleted',
+                    type: 'error',
+                });
             },
         });
+        reset();
+        setOpen(false);
     };
-
     return (
         <AppLayout>
             <Head title="Kegiatan" />
             <Flex h="full" flex="auto" flexDir="column" gap="4" rounded="xl" p="4">
                 <Grid gridAutoRows="min-content" gap="4" md={{ gridColumn: '3' }}>
                     <Toaster />
+                    <Dialog.Root lazyMount open={open} onOpenChange={(e) => setOpen(e.open)} size="sm" placement="center">
+                        <Portal>
+                            <Dialog.Backdrop />
+                            <Dialog.Positioner>
+                                <Dialog.Content>
+                                    <Dialog.Header>
+                                        <Dialog.Title>Delete Permintaan</Dialog.Title>
+                                    </Dialog.Header>
+                                    <Dialog.Body pb="4">
+                                        <Stack gap="4">
+                                            <Dialog.Description>
+                                                Apakah anda yakin ingin menghapus permintaan{' '}
+                                                <strong>
+                                                    {permintaan.tanggal
+                                                        ? permintaan.tanggal instanceof Date
+                                                            ? permintaan.tanggal.toLocaleDateString()
+                                                            : String(permintaan.tanggal)
+                                                        : 'N/A'}
+                                                    {' - '}
+                                                    {permintaan.tipe_permintaan.nama} - {permintaan.pasien.nama}
+                                                </strong>
+                                                ?
+                                            </Dialog.Description>
+                                        </Stack>
+                                    </Dialog.Body>
+                                    <Dialog.Footer>
+                                        <Dialog.ActionTrigger asChild>
+                                            <Button variant="surface" color="black">
+                                                Cancel
+                                            </Button>
+                                        </Dialog.ActionTrigger>
+                                        <Button color={'red'} variant="surface" loading={processing} onClick={submit}>
+                                            Delete
+                                        </Button>
+                                    </Dialog.Footer>
+                                </Dialog.Content>
+                            </Dialog.Positioner>
+                        </Portal>
+                    </Dialog.Root>
                     <Text fontSize="2xl" fontWeight="bold">
                         Permintaan Layanan
                     </Text>
-                    <Box display="flex" justifyContent="space-Between" alignItems="center">
-                        <HStack>
-                            <SingleDatePickerPopup
-                                isOpen={pickerFilterDisclosure.open}
-                                onClose={pickerFilterDisclosure.onClose}
-                                onOpen={pickerFilterDisclosure.onOpen}
-                                selectedDate={popupFilterDate}
-                                onSetDate={handleSetFilterDate}
-                                datePickerStyle={datePickerStyle}
-                            >
-                                <Input
-                                    value={popupFilterDate.toLocaleDateString('id-ID')}
-                                    onClick={pickerFilterDisclosure.onOpen}
-                                    readOnly
-                                    placeholder="Pilih Tanggal"
-                                />
-                            </SingleDatePickerPopup>
-                            <Button
-                                variant="surface"
-                                color="red"
-                                onClick={() => {
-                                    setPopupFilterDate(new Date());
-                                    router.visit(route('permintaan-layanan.index'), {
-                                        only: ['permintaans'],
-                                    });
+                    <HStack gap={3} mb={4}>
+                        <Button disabled={isExporting} variant="solid" colorPalette="blue" onClick={() => handleExport('csv')}>
+                            Export CSV
+                        </Button>
+                        <Button disabled={isExporting} variant="solid" colorPalette="green" onClick={() => handleExport('excel')}>
+                            Export Excel
+                        </Button>
+                        <Button disabled={isExporting} variant="solid" colorPalette="red" onClick={() => handleExport('pdf')}>
+                            Export PDF
+                        </Button>
+                    </HStack>
+                    <Box p={4}>
+                        <InputGroup mb={6}>
+                            <Input
+                                placeholder="Search all columns..."
+                                value={filterValue}
+                                onChange={(e) => {
+                                    setFilterValue(e.target.value);
+                                    setCurrentPage(1);
                                 }}
-                            >
-                                Reset
-                            </Button>
-                        </HStack>
-                    </Box>
+                                variant="outline"
+                            />
+                        </InputGroup>
+                        <Table.ScrollArea borderWidth="1px" rounded="md" height="300px" maxW={'breakpoint-lg'}>
+                            <Table.Root variant="line" size="md" stickyHeader>
+                                <Table.Header bg="gray.100">
+                                    <Table.Row>
+                                        <Table.ColumnHeader>No</Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('tanggal')}>
+                                            Tanggal {sortBy === 'tanggal' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('tipe_permintaan.nama')}>
+                                            Tipe Permintaan {sortBy === 'tipe_permintaan.nama' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('pasien.nama')}>
+                                            Pasien {sortBy === 'pasien.nama' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('triase.warna')}>
+                                            Triase {sortBy === 'triase.warna' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('penjamin_biaya.nama')}>
+                                            Penjamin Biaya {sortBy === 'penjamin_biaya.nama' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('unit.nama')}>
+                                            Unit {sortBy === 'unit.nama' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('creator.name')}>
+                                            Creator {sortBy === 'creator.name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('tujuan')}>
+                                            Tujuan {sortBy === 'tujuan' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('kilometer')}>
+                                            Kilometer {sortBy === 'kilometer' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('status_permintaan.nama')}>
+                                            Status Permintaan {sortBy === 'status_permintaan.nama' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('mobil.nama')}>
+                                            Mobil {sortBy === 'mobil.nama' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('driver.name')}>
+                                            Driver {sortBy === 'driver.name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('jam_berangkat')}>
+                                            Jam Berangkat {sortBy === 'jam_berangkat' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('jam_kembali')}>
+                                            Jam Kembali {sortBy === 'jam_kembali' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('kilometer_terakhir')}>
+                                            Kilometer Terakhir {sortBy === 'kilometer_terakhir' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader cursor="pointer" onClick={() => handleSort('biaya')}>
+                                            Biaya {sortBy === 'biaya' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader textAlign="end">Actions</Table.ColumnHeader>
+                                    </Table.Row>
+                                </Table.Header>
 
-                    <Box overflowX="auto">
-                        <Table.Root variant={'outline'} colorScheme="teal" showColumnBorder>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.ColumnHeader>No</Table.ColumnHeader>
-                                    <Table.ColumnHeader>Tanggal</Table.ColumnHeader>
-                                    <Table.ColumnHeader>Tipe Permintaan</Table.ColumnHeader>
-                                    <Table.ColumnHeader>Mobil</Table.ColumnHeader>
-                                    {hasRole('admin')&&(
-                                        <>
-                                            <Table.ColumnHeader>Unit</Table.ColumnHeader>
-                                            <Table.ColumnHeader>Creator</Table.ColumnHeader>
-                                        </>
-                                    )}
-                                    <Table.ColumnHeader>Tujuan</Table.ColumnHeader>
-                                    <Table.ColumnHeader>KM</Table.ColumnHeader>
-                                    <Table.ColumnHeader>Status Permintaan</Table.ColumnHeader>
-                                    <Table.ColumnHeader>Driver</Table.ColumnHeader>
-                                    {(hasRole('admin')||hasRole('driver'))&&(
-                                        <>
-                                            <Table.ColumnHeader>Jam Berangkat</Table.ColumnHeader>
-                                            <Table.ColumnHeader>Jam Kembali</Table.ColumnHeader>
-                                            {/* <Table.ColumnHeader>KM Terakhir</Table.ColumnHeader> */}
-                                        </>
-                                    )}
-
-                                    <Table.ColumnHeader textAlign="end">Actions</Table.ColumnHeader>
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                {permintaans.data.length>0? (
-                                    permintaans.data.map((permintaanMap, index) => (
-                                        <Table.Row key={permintaanMap.id}>
-                                            <Table.Cell>{index+1}</Table.Cell>
+                                <Table.Body>
+                                    {currentItems.map((item, index) => (
+                                        <Table.Row key={item.id} _hover={{ bg: 'gray.50' }}>
+                                            <Table.Cell>{indexOfFirstItem + index + 1}</Table.Cell>
                                             <Table.Cell>
-                                                {permintaanMap.tanggal? new Date(permintaanMap.tanggal).toLocaleDateString('id-ID'):'-'}
+                                                {item.tanggal instanceof Date ? item.tanggal.toLocaleDateString() : String(item.tanggal)}
                                             </Table.Cell>
-                                            <Table.Cell>{permintaanMap.tipe_permintaan.nama}</Table.Cell>
-                                            <Table.Cell>{permintaanMap.mobil?.nama}</Table.Cell>
-                                            {hasRole('admin')&&(
-                                                <>
-                                                    <Table.Cell>{permintaanMap.unit.nama}</Table.Cell>
-                                                    <Table.Cell>{permintaanMap.creator?.name}</Table.Cell>
-                                                </>
-                                            )}
-                                            <Table.Cell>{permintaanMap.tujuan}</Table.Cell>
-                                            <Table.Cell>{permintaanMap.kilometer}</Table.Cell>
-                                            <Table.Cell>{permintaanMap.status_permintaan.nama}</Table.Cell>
-                                            <Table.Cell>{permintaanMap.driver?.name}</Table.Cell>
-                                            <Table.Cell>{permintaanMap.jam_berangkat}</Table.Cell>
-                                            <Table.Cell>{permintaanMap.jam_kembali}</Table.Cell>
-                                            {/* <Table.Cell>{permintaanMap.kilometer_terakhir}</Table.Cell> */}
+                                            <Table.Cell>{item.tipe_permintaan.nama}</Table.Cell>
+                                            <Table.Cell>{item.pasien.nama}</Table.Cell>
+                                            <Table.Cell>{item.triase.warna}</Table.Cell>
+                                            <Table.Cell>{item.penjamin_biaya.nama}</Table.Cell>
+                                            <Table.Cell>{item.unit.nama}</Table.Cell>
+                                            <Table.Cell>{item.creator ? item.creator.name : 'N/A'}</Table.Cell>
+                                            <Table.Cell>{item.tujuan}</Table.Cell>
+                                            <Table.Cell>{item.kilometer !== null ? item.kilometer : 'N/A'}</Table.Cell>
+                                            <Table.Cell>{item.status_permintaan.nama}</Table.Cell>
+                                            <Table.Cell>{item.mobil.nama}</Table.Cell>
+                                            <Table.Cell>{item.driver ? item.driver.name : 'N/A'}</Table.Cell>
+                                            <Table.Cell>{item.jam_berangkat ? item.jam_berangkat : 'N/A'}</Table.Cell>
+                                            <Table.Cell>{item.jam_kembali ? item.jam_kembali : 'N/A'}</Table.Cell>
+                                            <Table.Cell>{item.kilometer_terakhir !== null ? item.kilometer_terakhir : 'N/A'}</Table.Cell>
+                                            <Table.Cell>{formatCurrency(item.biaya)}</Table.Cell>
                                             <Table.Cell textAlign="end">
-                                                <Button
-                                                    onClick={() => {
-                                                        setModal('edit');
-                                                        setOpen(true);
-                                                    }}
-                                                    size="sm"
-                                                    color={'blue'}
-                                                    variant="surface"
-                                                    mr={2}
-                                                >
+                                                {/* <Button size="sm" color={'blue'} variant="surface" mr={2}>
                                                     Edit
-                                                </Button>
+                                                </Button> */}
                                                 <Button
-                                                    onClick={() => {
-                                                        setModal('delete');
-                                                        setOpen(true);
-                                                    }}
                                                     size="sm"
                                                     color={'red'}
                                                     variant="surface"
+                                                    onClick={() => {
+                                                        setPermintaan(item);
+                                                        setOpen(true);
+                                                    }}
                                                 >
                                                     Delete
                                                 </Button>
                                             </Table.Cell>
                                         </Table.Row>
-                                    ))
-                                ):(
-                                    <Table.Row alignContent={'center'}>
-                                        <Table.Cell textAlign="center">
-                                            <p>Data tidak ditemukan</p>
-                                        </Table.Cell>
-                                    </Table.Row>
-                                )}
-                            </Table.Body>
-                        </Table.Root>
-                    </Box>
-                    <Center>
-                        <Pagination.Root
-                            count={permintaans.total}
-                            pageSize={Number(permintaans.per_page)}
-                            page={Number(permintaans.current_page)}
-                            onPageChange={(page) => {
-                                // pagination.setPage(page);
-                                router.reload({ only: ['permintaans'], data: { page: page.page } });
-                            }}
-                            siblingCount={2}
-                        >
-                            <ButtonGroup variant="ghost" size="sm">
-                                <Pagination.PrevTrigger asChild>
-                                    <IconButton>
-                                        <LuChevronLeft />
-                                    </IconButton>
-                                </Pagination.PrevTrigger>
-
-                                <Pagination.Items
-                                    render={(page) => <IconButton variant={{ base: 'ghost', _selected: 'outline' }}>{page.value}</IconButton>}
+                                    ))}
+                                </Table.Body>
+                            </Table.Root>
+                        </Table.ScrollArea>
+                        <HStack justifyContent="space-between" py={2} flexWrap="wrap">
+                            <HStack gap={2} wrap="wrap">
+                                <Button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} size="sm">
+                                    First
+                                </Button>
+                                <Button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1} size="sm">
+                                    Previous
+                                </Button>
+                                <Select
+                                    size="sm"
+                                    value={{ value: currentPage, label: String(currentPage) }}
+                                    options={Array.from({ length: totalPages }, (_, i) => ({
+                                        value: i + 1,
+                                        label: String(i + 1),
+                                    }))}
+                                    onChange={(option) => {
+                                        if (option) setCurrentPage(option.value);
+                                    }}
+                                    chakraStyles={{
+                                        container: (provided) => ({ ...provided, width: 'auto' }),
+                                        control: (provided) => ({ ...provided, minHeight: '32px', fontSize: 'sm' }),
+                                        dropdownIndicator: (provided) => ({ ...provided, paddingX: 2 }),
+                                        option: (provided) => ({ ...provided, fontSize: 'sm' }),
+                                    }}
                                 />
+                                <Button
+                                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                                    disabled={currentPage >= totalPages}
+                                    size="sm"
+                                >
+                                    Next
+                                </Button>
+                                <Button onClick={() => setCurrentPage(totalPages)} disabled={currentPage >= totalPages} size="sm">
+                                    Last
+                                </Button>
+                                <Box fontSize="sm" color="gray.600">
+                                    Page {currentPage} of {totalPages}
+                                </Box>
+                            </HStack>
 
-                                <Pagination.NextTrigger asChild>
-                                    <IconButton>
-                                        <LuChevronRight />
-                                    </IconButton>
-                                </Pagination.NextTrigger>
-                            </ButtonGroup>
-                        </Pagination.Root>
-                    </Center>
+                            <Select
+                                value={pageSizeOptions.find((opt) => opt.value === itemsPerPage)}
+                                onChange={(selectedOption) => {
+                                    if (selectedOption) {
+                                        setItemsPerPage(selectedOption.value);
+                                        setCurrentPage(1);
+                                    }
+                                }}
+                                options={pageSizeOptions}
+                                isSearchable={false}
+                                chakraStyles={{
+                                    container: (provided) => ({ ...provided, width: '150px' }),
+                                    control: (provided) => ({ ...provided, minHeight: '32px', fontSize: 'sm' }),
+                                    dropdownIndicator: (provided) => ({ ...provided, paddingX: 2 }),
+                                    option: (provided) => ({ ...provided, fontSize: 'sm' }),
+                                }}
+                                selectedOptionStyle="check"
+                            />
+                        </HStack>
+                    </Box>
                 </Grid>
             </Flex>
         </AppLayout>

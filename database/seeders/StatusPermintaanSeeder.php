@@ -31,9 +31,7 @@ class StatusPermintaanSeeder extends Seeder
             ],
         ];
         foreach ($data as $item) {
-            StatusPermintaan::create([
-                'nama' => $item['nama'],
-            ]);
+            StatusPermintaan::create($item);
         }
     }
 }

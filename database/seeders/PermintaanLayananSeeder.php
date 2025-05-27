@@ -17781,7 +17781,7 @@ class PermintaanLayananSeeder extends Seeder
                 'jam_kembali' => str_replace(".", ":", $item['jam_kembali']),
                 'kilometer' => rand(10, 400),
                 'biaya' => $item['biaya'],
-
+                'creator_id' => User::where('name', 'Admin')->first()->id,
                 'pasien_id' => Pasien::where('id', round(rand(1, 400)))->first()->id,
                 'triase_id' => (
                     ($item['tipe_permintaan_id'] == 'Jenazah') ?

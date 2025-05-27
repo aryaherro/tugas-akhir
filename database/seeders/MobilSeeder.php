@@ -36,10 +36,7 @@ class MobilSeeder extends Seeder
             ]
         ];
         foreach ($data as $item) {
-            Mobil::create([
-                'nama' => $item['nama'],
-                'plat_nomor' => $item['plat_nomor'],
-            ]);
+            Mobil::create($item);
         }
     }
 }
