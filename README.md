@@ -1,6 +1,6 @@
 Requirement :
-    - Composer (https://getcomposer.org/)
-    - Node.js (https://nodejs.org/) atau NVM (https://github.com/coreybutler/nvm-windows)
+  - Composer (https://getcomposer.org/)
+  - Node.js (https://nodejs.org/) atau NVM (https://github.com/coreybutler/nvm-windows)
 
 User :
   - Admin :
