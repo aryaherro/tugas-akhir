@@ -1,12 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
-    "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "name": "layanan/transportasi",
+    "description": "A Laravel application for managing transportation services.",
     "keywords": [
         "laravel",
-        "framework"
+        "transportation",
+        "services"
     ],
+    "type": "project",
     "license": "MIT",
     "require": {
         "php": "^8.2",
