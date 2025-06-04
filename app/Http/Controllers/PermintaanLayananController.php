@@ -15,7 +15,6 @@ use App\Models\Unit;
 use App\Models\Mobil;
 use App\Models\HargaRujuk;
 use Illuminate\Support\Facades\Date;
-use Mockery\Generator\StringManipulation\Pass\Pass;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -163,7 +162,7 @@ class PermintaanLayananController extends Controller
             'status_permintaan_id' => StatusPermintaan::find(($request->status_permintaan['id'] != 0) ? $request->status_permintaan['id'] : 1)->id,
             'mobil_id' => ($request->has('mobil') && $request->mobil != null) ? Mobil::find($request->mobil['id'])->id : null,
             'driver_id' => ($request->has('driver') && $request->driver != null) ? User::find($request->driver['id'])->id : null,
-            'harga' => $harga,
+            'biaya' => $harga,
         ]);
 
         return redirect()->route('permintaan-layanan.index')->with('success', 'Permintaan Layanan Berhasil Dibuat');
