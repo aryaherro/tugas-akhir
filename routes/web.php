@@ -139,7 +139,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ];
         $alternatives = array();
         $i = 0;
-        $tanggal = Carbon::create(Now())->format('Y-m-d');
+        $tanggal = Carbon::now()->format('Y-m-d');
         $permintaan = PermintaanLayanan::with([
             'tipe_permintaan',
             'pasien',
