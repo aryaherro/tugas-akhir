@@ -2,5 +2,5 @@
 apt-get update
 apt-get install -y php composer php-xml php-dom
 
-composer install
-npm install
+composer update
+npm update
