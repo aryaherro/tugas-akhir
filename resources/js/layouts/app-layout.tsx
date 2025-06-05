@@ -58,6 +58,12 @@ const MENU_ITEMS: NavItem[] = [
         icon: MdStar,
     },
     {
+        id: '5',
+        label: 'Hasil Perbandingan',
+        href: route('hasil'),
+        icon: MdStar,
+    },
+    {
         id: '9',
         label: 'Admin',
         icon: MdSettings,

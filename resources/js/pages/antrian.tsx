@@ -1,6 +1,7 @@
 import { SingleDatePickerPopup } from '@/components/DatePicker';
 import { DatePickerStyleConfig, defaultDatePickerStyle } from '@/components/DatePicker/type';
 import AppLayout from '@/layouts/app-layout';
+import { calculateAccuracy, calculateFIFORanking, calculateSAWScores } from '@/lib/rank';
 import { Box, Button, Flex, Heading, HStack, Input, List, Separator, Table, Text, useDisclosure } from '@chakra-ui/react';
 import { Head, router } from '@inertiajs/react';
 import { format } from 'date-fns';
@@ -12,38 +13,11 @@ type CriteriaType = {
     tipe: 'benefit' | 'cost';
 };
 type AlternativeType = {
+    id: number;
     tanggal: string;
     nama: string;
     values: number[];
 };
-
-function normalizeMatrix(alternatives: AlternativeType[], criteria: CriteriaType[]) {
-    const numCriteria = criteria.length;
-    const maxVals = Array(numCriteria).fill(0);
-    const minVals = Array(numCriteria).fill(Infinity);
-
-    for (let j = 0; j < numCriteria; j++) {
-        for (const alt of alternatives) {
-            maxVals[j] = Math.max(maxVals[j], alt.values[j]);
-            minVals[j] = Math.min(minVals[j], alt.values[j]);
-        }
-    }
-
-    return alternatives.map((alt) => {
-        const normValues = alt.values.map((val, j) => {
-            return criteria[j].tipe === 'benefit' ? val / maxVals[j] : minVals[j] / val;
-        });
-        return { ...alt, normValues };
-    });
-}
-
-function calculateScores(alternatives: AlternativeType[], criteria: CriteriaType[]) {
-    const normalized = normalizeMatrix(alternatives, criteria);
-    return normalized.map((alt) => {
-        const score = alt.normValues.reduce((acc, val, j) => acc + val * criteria[j].weight, 0);
-        return { name: alt.nama, score: score.toFixed(4) };
-    });
-}
 
 interface SAWModuleProps {
     criteria: CriteriaType[];
@@ -51,7 +25,18 @@ interface SAWModuleProps {
 }
 
 export default function SAWModule({ criteria, alternatives }: SAWModuleProps) {
-    const rankedAlternatives = calculateScores(alternatives, criteria).sort((a, b) => Number(b.score) - Number(a.score));
+    // Hitung ranking SAW
+    const sawScores = calculateSAWScores(alternatives, criteria);
+    const sawRanking = sawScores.sort((a, b) => Number(b.score) - Number(a.score)).map((item, index) => ({ ...item, sawRank: index + 1 }));
+    console.log('SAW Ranking:', sawRanking);
+
+    // Hitung ranking FIFO
+    const fifoRanking = calculateFIFORanking(alternatives);
+    console.log('FIFO Ranking:', fifoRanking);
+    // Hitung akurasi
+    const accuracyData = calculateAccuracy(fifoRanking, sawRanking);
+    console.log('Akurasi:', accuracyData);
+    // const rankedAlternatives = calculateSAWScores(alternatives, criteria).sort((a, b) => Number(b.score) - Number(a.score));
     const pickerFilterDisclosure = useDisclosure();
     const [popupSelectedDate, setPopupSelectedDate] = useState(new Date());
     const [popupFilterDate, setPopupFilterDate] = useState(new Date());
@@ -160,13 +145,13 @@ export default function SAWModule({ criteria, alternatives }: SAWModuleProps) {
                     <Heading size="md" mb={2}>
                         Peringkat:
                     </Heading>
-                    {rankedAlternatives.length === 0 ? (
+                    {sawRanking.length === 0 ? (
                         <Text fontSize="lg" color="gray.500">
                             Belum ada antrian pada tanggal ini
                         </Text>
                     ) : (
                         <List.Root as="ol" gap={2}>
-                            {rankedAlternatives.map((item, i) => (
+                            {sawRanking.map((item, i) => (
                                 <List.Item key={i}>
                                     <Text>
                                         {item.name} - Skor: {item.score}

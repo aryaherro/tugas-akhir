@@ -92,6 +92,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
         foreach ($permintaan as $key) {
             array_push($alternatives, [
+                'id' => $key->id,
                 'tanggal' => $key->tanggal,
                 'nama' => $key->tipe_permintaan->nama . ' - ' . $key->triase->warna . ' - ' . $key->kilometer . 'KM - Rp.' . $key->biaya . ' - ' . $key->penjamin_biaya->nama . ' - ' . $key->unit->nama . ' - (' . $key->pasien->no_rm . ')' . $key->pasien->nama,
                 'values' => [
@@ -109,6 +110,84 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'alternatives' => $alternatives,
         ]);
     })->name('antrian');
+    Route::get('/hasil', function () {
+        $criteria = [
+            [
+                'nama' => 'Tipe Permintaan',
+                'weight' => 0.3,
+                'tipe' => 'benefit'
+            ],
+            [
+                'nama' => 'Triase',
+                'weight' => 0.25,
+                'tipe' => 'benefit'
+            ],
+            [
+                'nama' => 'Jarak',
+                'weight' => 0.2,
+                'tipe' => 'benefit'
+            ],
+            [
+                'nama' => 'Biaya',
+                'weight' => 0.15,
+                'tipe' => 'benefit'
+            ],
+            [
+                'nama' => 'Penjamin',
+                'weight' => 0.1,
+                'tipe' => 'benefit'
+            ],
+        ];
+        $alternatives = array();
+        $i = 0;
+        if (request()->has('tanggal') && request()->tanggal != null) {
+            $tanggal = Carbon::create(request()->tanggal)->format('Y-m-d');
+            $permintaan = PermintaanLayanan::with([
+                'tipe_permintaan',
+                'pasien',
+                'triase',
+                'penjamin_biaya',
+                'mobil',
+                'unit',
+                'creator',
+                'status_permintaan',
+                'driver',
+            ])->whereDate('tanggal', $tanggal)->get();
+        } else {
+            request()->merge(['tanggal' => Carbon::now()->format('Y-m-d')]);
+            $tanggal = Carbon::create(request()->tanggal)->format('Y-m-d');
+            $permintaan = PermintaanLayanan::with([
+                'tipe_permintaan',
+                'pasien',
+                'triase',
+                'penjamin_biaya',
+                'mobil',
+                'unit',
+                'creator',
+                'status_permintaan',
+                'driver',
+            ])->whereDate('tanggal', $tanggal)->get();
+        }
+        foreach ($permintaan as $key) {
+            array_push($alternatives, [
+                'id' => $key->id,
+                'tanggal' => $key->tanggal,
+                'nama' => $key->tipe_permintaan->nama . ' - ' . $key->triase->warna . ' - ' . $key->kilometer . 'KM - Rp.' . $key->biaya . ' - ' . $key->penjamin_biaya->nama . ' - ' . $key->unit->nama . ' - (' . $key->pasien->no_rm . ')' . $key->pasien->nama,
+                'values' => [
+                    $key->tipe_permintaan->bobot,
+                    $key->triase->bobot,
+                    $key->kilometer > 300 ? 1 : ($key->kilometer > 150 ? 2 : 3),
+                    $key->biaya > 500000 ? 3 : ($key->biaya > 250000 ? 2 : 1),
+                    $key->penjamin_biaya->bobot
+                ]
+            ]);
+            $i++;
+        }
+        return Inertia::render('hasil', [
+            'criteria' => $criteria,
+            'alternatives' => $alternatives,
+        ]);
+    })->name('hasil');
     Route::get('dashboard', function () {
         $criteria = [
             [
@@ -153,6 +232,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ])->whereDate('tanggal', $tanggal)->get();
         foreach ($permintaan as $key) {
             array_push($alternatives, [
+                'id' => $key->id,
                 'tanggal' => $key->tanggal,
                 'nama' => $key->pasien->no_rm . ' - ' . $key->pasien->nama,
                 'values' => [
